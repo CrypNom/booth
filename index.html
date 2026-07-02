@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CTRL + Q Photo Booth</title>
+    <title>CTRL + Q Photo Booth Pro Studio</title>
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
-            --panel-bg: rgba(255, 255, 255, 0.85);
+            --panel-bg: rgba(255, 255, 255, 0.9);
             --border-color: rgba(0, 0, 0, 0.08);
             --accent-primary: #4f46e5;
             --text-main: #0f172a;
@@ -42,10 +42,7 @@
             background: radial-gradient(circle at center, rgba(79, 70, 229, 0.05) 0%, transparent 70%);
         }
 
-        .hero-content {
-            max-width: 800px;
-            width: 100%;
-        }
+        .hero-content { max-width: 800px; width: 100%; }
 
         .hero-title {
             font-size: 2.5rem;
@@ -57,19 +54,15 @@
             -webkit-text-fill-color: transparent;
         }
 
-        @media (min-width: 768px) {
-            .hero-title { font-size: 3.5rem; }
-        }
+        @media (min-width: 768px) { .hero-title { font-size: 3.5rem; } }
 
         .hero-description {
             font-size: 1.1rem;
             color: var(--text-muted);
             line-height: 1.6;
             margin-bottom: 40px;
-            padding: 0 10px;
         }
 
-        /* --- Section Configurations --- */
         .section-container {
             max-width: 1100px;
             width: 100%;
@@ -79,20 +72,9 @@
             border-top: 1px solid var(--border-color);
         }
 
-        .section-title {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 25px;
-            text-align: center;
-            color: var(--text-main);
-        }
+        .section-title { font-size: 1.75rem; font-weight: 700; margin-bottom: 25px; text-align: center; }
 
-        .about-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
+        .about-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px; }
 
         .about-card {
             background: var(--panel-bg);
@@ -100,55 +82,18 @@
             padding: 25px;
             border-radius: 16px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            text-align: left;
         }
 
-        .about-card h3 {
-            color: var(--accent-primary);
-            margin-top: 0;
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-        }
-
-        .about-card p {
-            color: var(--text-muted);
-            line-height: 1.5;
-            margin-bottom: 0;
-            font-size: 0.95rem;
-        }
+        .about-card h3 { color: var(--accent-primary); margin-top: 0; font-size: 1.2rem; margin-bottom: 10px; }
+        .about-card p { color: var(--text-muted); line-height: 1.5; margin-bottom: 0; font-size: 0.95rem; }
 
         /* --- Main App Interface Layout --- */
-        .app-content {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px 15px;
-            box-sizing: border-box;
-            width: 100%;
-        }
-
-        .app-content.active {
-            display: flex;
-        }
-
-        .workspace-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 30px;
-            max-width: 1200px;
-            width: 100%;
-            margin-top: 20px;
-        }
+        .app-content { display: none; flex-direction: column; align-items: center; padding: 40px 15px; box-sizing: border-box; width: 100%; }
+        .app-content.active { display: flex; }
+        .workspace-container { display: flex; flex-direction: column; align-items: center; gap: 30px; max-width: 1200px; width: 100%; margin-top: 20px; }
 
         @media (min-width: 992px) {
-            .workspace-container {
-                flex-direction: row;
-                align-items: flex-start;
-                justify-content: center;
-                gap: 40px;
-                margin-top: 40px;
-            }
+            .workspace-container { flex-direction: row; align-items: flex-start; justify-content: center; gap: 40px; margin-top: 40px; }
         }
 
         .control-side, .strip-side {
@@ -164,12 +109,9 @@
             box-sizing: border-box;
         }
 
-        @media (min-width: 576px) {
-            .control-side, .strip-side { padding: 30px; }
-        }
-        
+        @media (min-width: 576px) { .control-side, .strip-side { padding: 30px; } }
         .control-side { max-width: 500px; }
-        .strip-side { max-width: 360px; }
+        .strip-side { max-width: 420px; }
 
         /* --- Camera Box & Filters --- */
         .camera-box {
@@ -180,236 +122,120 @@
             border-radius: 12px;
             overflow: hidden;
             border: 1px solid var(--border-color);
+            transition: aspect-ratio 0.3s;
         }
 
-        #video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transform: scaleX(-1);
-        }
-
-        .f-normal { filter: none; }
-        .f-vintage { filter: sepia(0.4) contrast(1.1) brightness(0.95); }
-        .f-mono { filter: grayscale(1) contrast(1.25); }
-        .f-warm { filter: saturate(1.2) sepia(0.1) brightness(1.02); }
-        .f-cool { filter: saturate(0.95) hue-rotate(15deg) brightness(1.02); }
+        #video { width: 100%; height: 100%; object-fit: cover; }
+        .mirror-feed { transform: scaleX(-1); }
 
         #countdown {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255, 255, 255, 0.85);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            font-size: 4rem;
-            font-weight: 700;
-            color: var(--text-main);
-            z-index: 5;
+            display: none; justify-content: center; align-items: center;
+            font-size: 4rem; font-weight: 700; color: var(--text-main); z-index: 5;
         }
+
+        #flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; opacity: 0; z-index: 6; pointer-events: none; }
+        .flash-active { animation: flashAnim 0.4s ease-out; }
+        @keyframes flashAnim { 0% { opacity: 1; } 100% { opacity: 0; } }
 
         /* --- Customization Panels --- */
-        .options-panel {
-            width: 100%;
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .option-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            width: 100%;
-            overflow: hidden;
-        }
-
-        .option-label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .pill-select {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 6px;
-            width: 100%;
-            scrollbar-width: none;
-            -webkit-overflow-scrolling: touch;
-        }
+        .options-panel { width: 100%; margin-top: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .option-group { display: flex; flex-direction: column; gap: 8px; width: 100%; overflow: hidden; }
+        .option-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
         
-        .pill-select::-webkit-scrollbar {
-            display: none;
-        }
-
+        .pill-select { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .pill-select::-webkit-scrollbar { display: none; }
+        
         .pill {
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            white-space: nowrap;
-            color: var(--text-main);
-            transition: all 0.2s;
-            flex-shrink: 0;
+            background: #ffffff; border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 20px;
+            font-size: 0.85rem; cursor: pointer; white-space: nowrap; color: var(--text-main); transition: all 0.2s; flex-shrink: 0;
         }
+        .pill:hover { border-color: rgba(0, 0, 0, 0.2); }
+        .pill.active { background: #0f172a; color: #ffffff; border-color: #0f172a; font-weight: 600; }
 
-        .pill:hover {
-            border-color: rgba(0, 0, 0, 0.2);
-        }
+        .slider-control { display: flex; align-items: center; gap: 12px; background: #ffffff; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .slider-control input { flex: 1; accent-color: var(--accent-primary); }
+        .slider-control span { font-size: 0.8rem; min-width: 30px; font-weight: 600; text-align: right; }
 
-        .pill.active {
-            background: #0f172a;
-            color: #ffffff;
-            border-color: #0f172a;
-            font-weight: 600;
-        }
+        .text-field-custom { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.9rem; box-sizing: border-box; outline: none; color: var(--text-main); }
+        .text-field-custom:focus { border-color: var(--accent-primary); }
 
-        .action-btns {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 100%;
-            margin-top: 20px;
-        }
+        .action-btns { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 20px; }
+        .dual-btn-row { display: flex; gap: 10px; width: 100%; }
 
-        button {
-            background: #0f172a;
-            color: #ffffff;
-            border: none;
-            padding: 14px 24px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        button:hover {
-            opacity: 0.9;
-        }
-
-        button:disabled {
-            background: #cbd5e1;
-            color: #94a3b8;
-            cursor: not-allowed;
-            opacity: 1;
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-        }
-
-        .upload-btn-wrapper {
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-        }
+        button { background: #0f172a; color: #ffffff; border: none; padding: 14px 24px; font-size: 0.95rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.2s; width: 100%; box-sizing: border-box; }
+        button:hover { opacity: 0.9; }
+        button:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; }
+        .btn-secondary { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); }
         
-        .upload-btn-wrapper input[type=file] {
-            font-size: 100px;
-            position: absolute;
-            left: 0; top: 0;
-            opacity: 0;
-            cursor: pointer;
-            width: 100%;
-            height: 100%;
+        .upload-btn-wrapper { position: relative; overflow: hidden; width: 100%; }
+        .upload-btn-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+
+        /* --- Photobooth Strip Preview Layout Architecture --- */
+        .photo-strip {
+            width: 100%; max-width: 200px; background: var(--strip-bg); padding: 14px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 12px;
+            border: 1px solid rgba(0,0,0,0.05); transition: background 0.2s, color 0.2s; box-sizing: border-box;
         }
 
-        /* --- Photobooth Strip Preview --- */
-        .photo-strip {
-            width: 100%;
-            max-width: 180px;
-            background: var(--strip-bg);
-            padding: 14px 14px 24px 14px;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            border: 1px solid rgba(0,0,0,0.05);
-            transition: background 0.2s, color 0.2s;
-            box-sizing: border-box;
-        }
+        .photo-strip.layout-strip { flex-direction: column; gap: 12px; padding-bottom: 24px; }
+        .photo-strip.layout-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 360px; padding-bottom: 40px; position: relative; }
+        .photo-strip.layout-grid .strip-footer { grid-column: span 2; position: absolute; bottom: 12px; left: 0; right: 0; }
+
+        /* Variable Crop Ratios */
+        .ratio-4-3 .strip-slot { aspect-ratio: 4/3; }
+        .ratio-1-1 .strip-slot { aspect-ratio: 1/1; }
+        .ratio-3-4 .strip-slot { aspect-ratio: 3/4; }
 
         .strip-slot {
-            width: 100%;
-            aspect-ratio: 4/3;
-            background: #f1f5f9;
-            border: 2px solid transparent;
-            border-radius: 4px;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            cursor: pointer;
-            transition: border-color 0.2s;
+            width: 100%; background: #f1f5f9; border: 2px solid transparent; border-radius: 4px;
+            overflow: hidden; display: flex; justify-content: center; align-items: center;
+            position: relative; cursor: grab; transition: border-color 0.2s; user-select: none;
+        }
+        .strip-slot:active { cursor: grabbing; }
+        .strip-slot.selected { border-color: var(--accent-primary); box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2); }
+        .strip-slot img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        .strip-slot span { font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase; pointer-events: none; }
+
+        /* Watermark Label Layout Inside Slots */
+        .slot-watermark {
+            position: absolute; bottom: 6px; right: 6px; font-size: 8px; font-family: monospace;
+            color: rgba(255, 255, 255, 0.75); background: rgba(0, 0, 0, 0.3);
+            padding: 2px 4px; border-radius: 2px; pointer-events: none; letter-spacing: 0.5px;
         }
 
-        .strip-slot.selected {
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        .slot-clear-btn {
+            position: absolute; top: 4px; right: 4px; width: 18px; height: 18px; border-radius: 50%;
+            background: rgba(15, 23, 42, 0.75); color: #ffffff; display: none;
+            justify-content: center; align-items: center; font-size: 10px; font-weight: bold; cursor: pointer; z-index: 3; border: none;
         }
+        .strip-slot:hover .slot-clear-btn { display: flex; }
+        .slot-clear-btn:hover { background: rgba(220, 38, 38, 0.9); }
 
-        .strip-slot img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .strip-slot span {
-            font-size: 0.7rem;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            pointer-events: none;
-        }
-
-        .strip-footer {
-            text-align: center;
-            font-family: var(--strip-font);
-            font-size: 0.8rem;
-            color: var(--strip-text);
-            margin-top: 5px;
-            letter-spacing: 2px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        canvas {
-            display: none;
-        }
+        .strip-footer { text-align: center; font-family: var(--strip-font); font-size: 0.8rem; color: var(--strip-text); margin-top: 5px; letter-spacing: 2px; font-weight: bold; text-transform: uppercase; }
+        canvas { display: none; }
     </style>
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://crypnom.github.io/booth/">
-    <meta property="og:title" content="CTRL + Q Photo Booth">
-    <meta property="og:description" content="An instant browser-based studio designed for clean, minimalist output creation. Process filters, canvases, and media strips instantly.">
-    <meta property="og:image" content="https://raw.githubusercontent.com/CrypNom/booth/main/og-cover.png">
+<meta property="og:url" content="https://crypnom.github.io/booth/">
+<meta property="og:title" content="CTRL + Q Photo Booth">
+<meta property="og:description" content="An instant browser-based studio designed for clean, minimalist output creation. Process filters, canvases, and media strips instantly.">
+<meta property="og:image" content="https://raw.githubusercontent.com/CrypNom/booth/main/og-cover.png">
 
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://crypnom.github.io/booth/">
-    <meta name="twitter:title" content="CTRL + Q Photo Booth">
-    <meta name="twitter:description" content="An instant browser-based studio designed for clean, minimalist output creation. Process filters, canvases, and media strips instantly.">
-    <meta name="twitter:image" content="https://raw.githubusercontent.com/CrypNom/booth/main/og-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://crypnom.github.io/booth/">
+<meta name="twitter:title" content="CTRL + Q Photo Booth">
+<meta name="twitter:description" content="An instant browser-based studio designed for clean, minimalist output creation. Process filters, canvases, and media strips instantly.">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/CrypNom/booth/main/og-cover.png">
 </head>
 <body>
 
     <div class="hero-screen" id="hero-screen">
         <div class="hero-content">
-            <h1 class="hero-title">CTRL + Q Photo Booth</h1>
+            <h1 class="hero-title">CTRL + Q Photo Booth Pro</h1>
             <p class="hero-description">
-                An instant browser-based studio designed for clean, minimalist output creation. 
-                Configure filters dynamically, select refined canvas profiles, capture live output assets, or 
-                process local media records through downscaled strip compilation matrix logic instantly.
+                An advanced web-based photo laboratory engine. Edit processing constraints, map crop matrices, 
+                and construct professional canvas sequences with local processing security workflows instantly.
             </p>
             <button id="enter-booth-btn" style="max-width: 240px; margin-bottom: 40px;">Let's Move To Booth!</button>
         </div>
@@ -435,53 +261,99 @@
 
     <div class="app-content" id="app-content">
         <h1 class="hero-title" style="font-size: 2rem; margin-bottom: 0;">CTRL + Q Photo Booth</h1>
-        <p style="color: var(--text-muted); margin-top: 6px; margin-bottom: 15px; text-align: center;">Configure studio profile settings below. Tap a slot on the strip to target it explicitly.</p>
+        <p style="color: var(--text-muted); margin-top: 6px; margin-bottom: 15px; text-align: center;">Drag assets to swap positioning layout context lines.</p>
 
         <div class="workspace-container">
             <div class="control-side">
-                <div class="camera-box">
-                    <video id="video" class="f-normal" autoplay playsinline></video>
+                <div class="camera-box id="camera-box-container">
+                    <video id="video" class="mirror-feed" autoplay playsinline></video>
                     <div id="countdown">3</div>
+                    <div id="flash"></div>
                 </div>
 
                 <div class="options-panel">
                     <div class="option-group">
-                        <div class="option-label">Filter Processing</div>
+                        <div class="option-label">Fine Tuning Node Matrix</div>
+                        <div class="slider-control">
+                            <label style="font-size:0.75rem; min-width:65px;">Brightness</label>
+                            <input type="range" id="slider-bright" min="50" max="150" value="100">
+                            <span id="val-bright">100%</span>
+                        </div>
+                        <div class="slider-control">
+                            <label style="font-size:0.75rem; min-width:65px;">Contrast</label>
+                            <input type="range" id="slider-contrast" min="50" max="150" value="100">
+                            <span id="val-contrast">100%</span>
+                        </div>
+                        <div class="slider-control">
+                            <label style="font-size:0.75rem; min-width:65px;">Saturation</label>
+                            <input type="range" id="slider-saturate" min="0" max="200" value="100">
+                            <span id="val-saturate">100%</span>
+                        </div>
+                    </div>
+
+                    <div class="option-group">
+                        <div class="option-label">Filter Processing Preset</div>
                         <div class="pill-select" id="filter-select">
-                            <div class="pill active" data-filter="f-normal">Original</div>
-                            <div class="pill" data-filter="f-vintage">Vintage</div>
-                            <div class="pill" data-filter="f-mono">Monochrome</div>
-                            <div class="pill" data-filter="f-warm">Warm Linear</div>
-                            <div class="pill" data-filter="f-cool">Cool Matrix</div>
+                            <div class="pill active" data-filter="">Original</div>
+                            <div class="pill" data-filter="sepia(0.4)">Vintage</div>
+                            <div class="pill" data-filter="grayscale(1)">Monochrome</div>
+                            <div class="pill" data-filter="saturate(1.3) sepia(0.1)">Warm Linear</div>
+                            <div class="pill" data-filter="hue-rotate(15deg)">Cool Matrix</div>
+                        </div>
+                    </div>
+
+                    <div class="option-group">
+                        <div class="option-label">Crop Aspect Ratio</div>
+                        <div class="pill-select" id="ratio-select">
+                            <div class="pill active" data-ratio="ratio-4-3" data-w="640" data-h="480">Classic 4:3</div>
+                            <div class="pill" data-ratio="ratio-1-1" data-w="480" data-h="480">Square 1:1</div>
+                            <div class="pill" data-ratio="ratio-3-4" data-w="360" data-h="480">Portrait 3:4</div>
+                        </div>
+                    </div>
+
+                    <div class="option-group">
+                        <div class="option-label">Layout Architecture</div>
+                        <div class="pill-select" id="layout-select">
+                            <div class="pill active" data-layout="layout-strip">Vertical Strip</div>
+                            <div class="pill" data-layout="layout-grid">Quad Grid (2x2)</div>
                         </div>
                     </div>
 
                     <div class="option-group">
                         <div class="option-label">Strip Color Profile</div>
                         <div class="pill-select" id="theme-select">
-                            <div class="pill active" data-bg="#ffffff" data-name="Classic Stark">Stark White</div>
-                            <div class="pill" data-bg="#f8fafc" data-name="Slate">Slate Tint</div>
-                            <div class="pill" data-bg="#fef2f2" data-name="Blush">Blush Tint</div>
-                            <div class="pill" data-bg="#f0fdf4" data-name="Mint">Mint Tint</div>
-                            <div class="pill" data-bg="#eff6ff" data-name="Sky">Sky Tint</div>
-                            <div class="pill" data-bg="#0f172a" data-name="Obsidian">Obsidian Dark</div>
+                            <div class="pill active" data-bg="#ffffff">Stark White</div>
+                            <div class="pill" data-bg="#f8fafc">Slate Tint</div>
+                            <div class="pill" data-bg="#fef2f2">Blush Tint</div>
+                            <div class="pill" data-bg="#0f172a">Obsidian Dark</div>
                         </div>
                     </div>
 
                     <div class="option-group">
-                        <div class="option-label">Strip Text Configuration</div>
+                        <div class="option-label">Strip Typography Style</div>
                         <div class="pill-select" id="text-select">
-                            <div class="pill active" data-color="#0f172a" data-font="'Georgia', serif" data-text="CHRONICLE">Chronicle (Serif)</div>
-                            <div class="pill" data-color="#475569" data-font="-apple-system, sans-serif" data-text="MEMORIES">Memories (Sans)</div>
-                            <div class="pill" data-color="#1e1b4b" data-font="'Courier New', monospace" data-text="CAPTURE.LOG">Capture (Mono)</div>
-                            <div class="pill" data-color="#dc2626" data-font="'Georgia', serif" data-text="ARCHIVE">Archive (Red)</div>
-                            <div class="pill" data-color="#ffffff" data-font="-apple-system, sans-serif" data-text="MINIMAL">Minimal (Light)</div>
+                            <div class="pill active" data-color="#0f172a" data-font="'Georgia', serif">Chronicle (Serif)</div>
+                            <div class="pill" data-color="#475569" data-font="-apple-system, sans-serif">Memories (Sans)</div>
+                            <div class="pill" data-color="#ffffff" data-font="-apple-system, sans-serif">Minimal (Light)</div>
                         </div>
+                    </div>
+
+                    <div class="option-group">
+                        <div class="option-label">Custom Footer Copy</div>
+                        <input type="text" id="custom-text-input" class="text-field-custom" value="CHRONICLE" placeholder="Type custom strip label...">
+                    </div>
+
+                    <div class="option-group">
+                        <div class="option-label">Corner Watermark Text Overlay</div>
+                        <input type="text" id="watermark-text-input" class="text-field-custom" value="CTRL+Q STUDIO" placeholder="Type corner watermark string...">
                     </div>
                 </div>
 
                 <div class="action-btns">
-                    <button id="start-btn">Capture Session Sequence</button>
+                    <div class="dual-btn-row">
+                        <button id="start-btn">Capture Strip</button>
+                        <button id="camera-toggle-btn" class="btn-secondary" style="max-width: 65px; padding: 14px 0;" title="Flip Lens">🔄</button>
+                    </div>
                     
                     <div class="upload-btn-wrapper">
                         <button class="btn-secondary">Upload Media Asset</button>
@@ -493,11 +365,19 @@
             </div>
 
             <div class="strip-side">
-                <div class="photo-strip" id="photo-strip">
-                    <div class="strip-slot selected" id="slot-0" data-index="0"><span style="color:#94a3b8;">Slot 1</span></div>
-                    <div class="strip-slot" id="slot-1" data-index="1"><span style="color:#94a3b8;">Slot 2</span></div>
-                    <div class="strip-slot" id="slot-2" data-index="2"><span style="color:#94a3b8;">Slot 3</span></div>
-                    <div class="strip-slot" id="slot-3" data-index="3"><span style="color:#94a3b8;">Slot 4</span></div>
+                <div class="photo-strip layout-strip ratio-4-3" id="photo-strip">
+                    <div class="strip-slot selected" id="slot-0" data-index="0" draggable="true">
+                        <button class="slot-clear-btn">×</button><span style="color:#94a3b8;">Slot 1</span>
+                    </div>
+                    <div class="strip-slot" id="slot-1" data-index="1" draggable="true">
+                        <button class="slot-clear-btn">×</button><span style="color:#94a3b8;">Slot 2</span>
+                    </div>
+                    <div class="strip-slot" id="slot-2" data-index="2" draggable="true">
+                        <button class="slot-clear-btn">×</button><span style="color:#94a3b8;">Slot 3</span>
+                    </div>
+                    <div class="strip-slot" id="slot-3" data-index="3" draggable="true">
+                        <button class="slot-clear-btn">×</button><span style="color:#94a3b8;">Slot 4</span>
+                    </div>
                     <div class="strip-footer" id="strip-footer-text">CHRONICLE</div>
                 </div>
             </div>
@@ -510,43 +390,71 @@
         const heroScreen = document.getElementById('hero-screen');
         const enterBoothBtn = document.getElementById('enter-booth-btn');
         const appContent = document.getElementById('app-content');
-
         const video = document.getElementById('video');
         const snapCanvas = document.getElementById('snapshot-canvas');
         const startBtn = document.getElementById('start-btn');
+        const cameraToggleBtn = document.getElementById('camera-toggle-btn');
         const downloadBtn = document.getElementById('download-btn');
         const countdownEl = document.getElementById('countdown');
+        const flashEl = document.getElementById('flash');
         const galleryUpload = document.getElementById('gallery-upload');
         const photoStrip = document.getElementById('photo-strip');
+        const customTextInput = document.getElementById('custom-text-input');
+        const watermarkTextInput = document.getElementById('watermark-text-input');
         const footerText = document.getElementById('strip-footer-text');
         const snapCtx = snapCanvas.getContext('2d');
 
+        // Parameter Node Tracking
+        let bVal = 100, cVal = 100, sVal = 100;
+        let baseFilterStr = '';
+        let targetCropW = 640, targetCropH = 480;
+        let cropRatioClass = 'ratio-4-3';
+        let activeLayout = 'layout-strip';
+        
         let photoCount = 0;
-        const totalPhotos = 4;
         let capturedImages = new Array(4).fill(null); 
-        let activeFilter = 'f-normal';
         let selectedSlotIndex = 0;
+        let isFrontCamera = true;
 
         let currentBgColor = '#ffffff';
         let currentTextColor = '#0f172a';
         let currentTextFont = "'Georgia', serif";
         let currentTextContent = 'CHRONICLE';
+        let currentWatermarkContent = 'CTRL+Q STUDIO';
 
-        const filterCanvasMap = {
-            'f-normal': (ctx) => {},
-            'f-vintage': (ctx) => {
-                ctx.filter = 'sepia(0.4) contrast(1.1) brightness(0.95)';
-            },
-            'f-mono': (ctx) => {
-                ctx.filter = 'grayscale(1) contrast(1.25)';
-            },
-            'f-warm': (ctx) => {
-                ctx.filter = 'saturate(1.2) sepia(0.1) brightness(1.02)';
-            },
-            'f-cool': (ctx) => {
-                ctx.filter = 'saturate(0.95) hue-rotate(15deg) brightness(1.02)';
-            }
-        };
+        // Native Audio Synth Shutter Trigger
+        function playShutterAudio() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if(!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const bufferSize = ctx.sampleRate * 0.12; 
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                
+                // White noise generation array
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+
+                const noiseNode = ctx.createBufferSource();
+                noiseNode.buffer = buffer;
+
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'highpass';
+                filter.frequency.setValueAtTime(1200, ctx.currentTime);
+                filter.frequency.exponentialRampToValueAtTime(8000, ctx.currentTime + 0.08);
+
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.7, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.11);
+
+                noiseNode.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+                noiseNode.start();
+            } catch(e) { console.warn("Audio synthesis restricted:", e); }
+        }
 
         enterBoothBtn.addEventListener('click', () => {
             heroScreen.style.display = 'none';
@@ -556,50 +464,69 @@
         });
 
         async function initCamera() {
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                alert("Your current profile or browser wrapper environment blocks camera streaming services. Ensure you are using a secure context layer (HTTPS).");
-                return;
-            }
+            if (video.srcObject) { video.srcObject.getTracks().forEach(track => track.stop()); }
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { return; }
 
             const constraints = {
-                video: {
-                    width: { ideal: 640 },
-                    height: { ideal: 480 },
-                    facingMode: "user"
-                },
+                video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: isFrontCamera ? "user" : "environment" },
                 audio: false
             };
+
+            if (isFrontCamera) video.classList.add('mirror-feed');
+            else video.classList.remove('mirror-feed');
 
             try {
                 const stream = await navigator.mediaDevices.getUserMedia(constraints);
                 video.srcObject = stream;
-                
-                video.onloadedmetadata = () => {
-                    video.play().catch(e => console.error("Auto playback restricted:", e));
-                };
-            } catch (err) {
-                console.warn("Media hardware mapping failed natively:", err);
-                alert(`Could not target active hardware camera index input stream. Profile state: ${err.name}`);
-            }
+            } catch (err) { alert(`Lens configuration issue: ${err.name}`); }
         }
 
-        // Slot selection listener
-        document.querySelectorAll('.strip-slot').forEach(slot => {
-            slot.addEventListener('click', (e) => {
-                document.querySelectorAll('.strip-slot').forEach(s => s.classList.remove('selected'));
-                slot.classList.add('selected');
-                selectedSlotIndex = parseInt(slot.getAttribute('data-index'));
-            });
-        });
+        cameraToggleBtn.addEventListener('click', () => { isFrontCamera = !isFrontCamera; initCamera(); });
+
+        // Build Combined Master Filter String Dynamic Evaluation
+        function updateLiveFilterStyles() {
+            const compiledFilter = `brightness(${bVal}%) contrast(${cVal}%) saturate(${sVal}%) ${baseFilterStr}`;
+            video.style.filter = compiledFilter;
+        }
+
+        // Connect Hardware Processing Controls
+        document.getElementById('slider-bright').addEventListener('input', (e) => { bVal = e.target.value; document.getElementById('val-bright').innerText = bVal+'%'; updateLiveFilterStyles(); });
+        document.getElementById('slider-contrast').addEventListener('input', (e) => { cVal = e.target.value; document.getElementById('val-contrast').innerText = cVal+'%'; updateLiveFilterStyles(); });
+        document.getElementById('slider-saturate').addEventListener('input', (e) => { sVal = e.target.value; document.getElementById('val-saturate').innerText = sVal+'%'; updateLiveFilterStyles(); });
 
         document.getElementById('filter-select').addEventListener('click', (e) => {
             if(e.target.classList.contains('pill')) {
                 document.querySelectorAll('#filter-select .pill').forEach(p => p.classList.remove('active'));
                 e.target.classList.add('active');
+                baseFilterStr = e.target.getAttribute('data-filter');
+                updateLiveFilterStyles();
+            }
+        });
+
+        document.getElementById('ratio-select').addEventListener('click', (e) => {
+            if(e.target.classList.contains('pill')) {
+                document.querySelectorAll('#ratio-select .pill').forEach(p => p.classList.remove('active'));
+                e.target.classList.add('active');
                 
-                video.className = '';
-                activeFilter = e.target.getAttribute('data-filter');
-                video.classList.add(activeFilter);
+                photoStrip.classList.remove(cropRatioClass);
+                cropRatioClass = e.target.getAttribute('data-ratio');
+                photoStrip.classList.add(cropRatioClass);
+
+                targetCropW = parseInt(e.target.getAttribute('data-w'));
+                targetCropH = parseInt(e.target.getAttribute('data-h'));
+                
+                // Adjust active workspace presentation aspect container safely
+                document.querySelector('.camera-box').style.aspectRatio = `${targetCropW}/${targetCropH}`;
+            }
+        });
+
+        document.getElementById('layout-select').addEventListener('click', (e) => {
+            if(e.target.classList.contains('pill')) {
+                document.querySelectorAll('#layout-select .pill').forEach(p => p.classList.remove('active'));
+                e.target.classList.add('active');
+                photoStrip.classList.remove(activeLayout);
+                activeLayout = e.target.getAttribute('data-layout');
+                photoStrip.classList.add(activeLayout);
             }
         });
 
@@ -607,7 +534,6 @@
             if(e.target.classList.contains('pill')) {
                 document.querySelectorAll('#theme-select .pill').forEach(p => p.classList.remove('active'));
                 e.target.classList.add('active');
-                
                 currentBgColor = e.target.getAttribute('data-bg');
                 photoStrip.style.backgroundColor = currentBgColor;
             }
@@ -617,192 +543,190 @@
             if(e.target.classList.contains('pill')) {
                 document.querySelectorAll('#text-select .pill').forEach(p => p.classList.remove('active'));
                 e.target.classList.add('active');
-                
                 currentTextColor = e.target.getAttribute('data-color');
                 currentTextFont = e.target.getAttribute('data-font');
-                currentTextContent = e.target.getAttribute('data-text');
-                
                 footerText.style.color = currentTextColor;
                 footerText.style.fontFamily = currentTextFont;
-                footerText.innerText = currentTextContent;
             }
         });
 
-        startBtn.addEventListener('click', () => {
-            photoCount = 0;
-            capturedImages = new Array(4).fill(null);
-            startBtn.disabled = true;
-            downloadBtn.style.display = 'none';
-            
-            for(let i=0; i<4; i++) {
-                document.getElementById(`slot-${i}`).innerHTML = `<span style="color:#94a3b8;">Processing...</span>`;
+        customTextInput.addEventListener('input', (e) => { currentTextContent = e.target.value.toUpperCase(); footerText.innerText = currentTextContent || ' '; });
+        watermarkTextInput.addEventListener('input', (e) => { currentWatermarkContent = e.target.value.toUpperCase(); renderSlotsFromData(); });
+
+        // Slot Drag Configuration Management
+        function assignSlotListeners() {
+            document.querySelectorAll('.strip-slot').forEach(slot => {
+                slot.onclick = (e) => {
+                    if (e.target.classList.contains('slot-clear-btn')) return;
+                    document.querySelectorAll('.strip-slot').forEach(s => s.classList.remove('selected'));
+                    slot.classList.add('selected');
+                    selectedSlotIndex = parseInt(slot.getAttribute('data-index'));
+                };
+                slot.ondragstart = (e) => e.dataTransfer.setData('text/plain', slot.getAttribute('data-index'));
+                slot.ondragover = (e) => e.preventDefault();
+                slot.ondrop = (e) => {
+                    e.preventDefault();
+                    const src = parseInt(e.dataTransfer.getData('text/plain'));
+                    const tgt = parseInt(slot.getAttribute('data-index'));
+                    if (src !== tgt) {
+                        const tmp = capturedImages[src]; capturedImages[src] = capturedImages[tgt]; capturedImages[tgt] = tmp;
+                        renderSlotsFromData();
+                    }
+                };
+            });
+            document.querySelectorAll('.slot-clear-btn').forEach(btn => {
+                btn.onclick = (e) => { e.stopPropagation(); capturedImages[parseInt(btn.closest('.strip-slot').getAttribute('data-index'))] = null; renderSlotsFromData(); };
+            });
+        }
+
+        function renderSlotsFromData() {
+            for(let i = 0; i < 4; i++) {
+                const slot = document.getElementById(`slot-${i}`);
+                slot.className = `strip-slot ${selectedSlotIndex === i ? 'selected' : ''}`;
+                if (capturedImages[i]) {
+                    slot.innerHTML = `<button class="slot-clear-btn">×</button><img src="${capturedImages[i]}"><div class="slot-watermark">${currentWatermarkContent}</div>`;
+                } else {
+                    slot.innerHTML = `<button class="slot-clear-btn">×</button><span style="color:#94a3b8;">Slot ${i+1}</span>`;
+                }
             }
+            assignSlotListeners();
+            updateDownloadButtonVisibility();
+        }
+
+        startBtn.addEventListener('click', () => {
+            photoCount = 0; capturedImages = new Array(4).fill(null); startBtn.disabled = true; downloadBtn.style.display = 'none';
+            for(let i=0; i<4; i++) document.getElementById(`slot-${i}`).innerHTML = `<span style="color:#94a3b8;">Processing...</span>`;
             takeNextPhotoStrip();
         });
 
         function takeNextPhotoStrip() {
             if (photoCount < totalPhotos) {
-                let timeLeft = 3;
-                countdownEl.style.display = 'flex';
-                countdownEl.innerText = timeLeft;
-
+                let timeLeft = 3; countdownEl.style.display = 'flex'; countdownEl.innerText = timeLeft;
                 const timer = setInterval(() => {
                     timeLeft--;
-                    if (timeLeft > 0) {
-                        countdownEl.innerText = timeLeft;
-                    } else {
-                        clearInterval(timer);
-                        countdownEl.style.display = 'none';
-                        capturePhoto(photoCount);
-                        photoCount++;
-                        setTimeout(takeNextPhotoStrip, 800);
+                    if (timeLeft > 0) countdownEl.innerText = timeLeft;
+                    else {
+                        clearInterval(timer); countdownEl.style.display = 'none';
+                        playShutterAudio();
+                        flashEl.classList.remove('flash-active'); void flashEl.offsetWidth; flashEl.classList.add('flash-active');
+                        capturePhoto(photoCount); photoCount++; setTimeout(takeNextPhotoStrip, 800);
                     }
                 }, 1000);
-            } else {
-                startBtn.disabled = false;
-                updateDownloadButtonVisibility();
-            }
+            } else { startBtn.disabled = false; updateDownloadButtonVisibility(); }
         }
 
         function capturePhoto(targetSlot) {
-            snapCtx.clearRect(0, 0, snapCanvas.width, snapCanvas.height);
+            snapCanvas.width = targetCropW; snapCanvas.height = targetCropH;
+            snapCtx.clearRect(0, 0, targetCropW, targetCropH);
             snapCtx.save();
             
-            snapCtx.translate(snapCanvas.width, 0);
-            snapCtx.scale(-1, 1);
+            if (isFrontCamera) { snapCtx.translate(targetCropW, 0); snapCtx.scale(-1, 1); }
+            snapCtx.filter = `brightness(${bVal}%) contrast(${cVal}%) saturate(${sVal}%) ${baseFilterStr}`;
             
-            if (filterCanvasMap[activeFilter]) {
-                filterCanvasMap[activeFilter](snapCtx);
+            // Mathematical center-crop positioning logic evaluation
+            const videoAspect = 640 / 480;
+            const targetAspect = targetCropW / targetCropH;
+            let sx = 0, sy = 0, sw = 640, sh = 480;
+
+            if (videoAspect > targetAspect) { sw = sh * targetAspect; sx = (640 - sw) / 2; } 
+            else if (videoAspect < targetAspect) { sh = sw / targetAspect; sy = (480 - sh) / 2; }
+
+            snapCtx.drawImage(video, sx, sy, sw, sh, 0, 0, targetCropW, targetCropH);
+            
+            // Draw internal asset level custom text overlay watermark sequence
+            if(currentWatermarkContent) {
+                snapCtx.restore(); snapCtx.save();
+                snapCtx.fillStyle = "rgba(255,255,255,0.75)";
+                snapCtx.font = "bold 13px monospace";
+                snapCtx.textAlign = "right";
+                snapCtx.fillText(currentWatermarkContent, targetCropW - 15, targetCropH - 15);
             }
             
-            snapCtx.drawImage(video, 0, 0, snapCanvas.width, snapCanvas.height);
             snapCtx.restore();
-            snapCtx.filter = 'none';
-
-            const dataUrl = snapCanvas.toDataURL('image/jpeg');
-            capturedImages[targetSlot] = dataUrl;
-
-            const img = document.createElement('img');
-            img.src = dataUrl;
-            
-            const slot = document.getElementById(`slot-${targetSlot}`);
-            slot.innerHTML = '';
-            slot.appendChild(img);
-            updateDownloadButtonVisibility();
+            capturedImages[targetSlot] = snapCanvas.toDataURL('image/jpeg', 0.9);
+            renderSlotsFromData();
         }
 
         galleryUpload.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
+            const file = e.target.files[0]; if (!file) return;
             const targetIndex = selectedSlotIndex;
-
             const reader = new FileReader();
             reader.onload = (event) => {
-                const imgObj = new Image();
-                imgObj.src = event.target.result;
+                const imgObj = new Image(); imgObj.src = event.target.result;
                 imgObj.onload = () => {
-                    snapCtx.clearRect(0, 0, snapCanvas.width, snapCanvas.height);
+                    snapCanvas.width = targetCropW; snapCanvas.height = targetCropH;
+                    snapCtx.clearRect(0, 0, targetCropW, targetCropH);
+                    snapCtx.save();
+                    snapCtx.filter = `brightness(${bVal}%) contrast(${cVal}%) saturate(${sVal}%) ${baseFilterStr}`;
                     
-                    if (filterCanvasMap[activeFilter]) {
-                        filterCanvasMap[activeFilter](snapCtx);
-                    }
-                    
-                    const scale = Math.max(snapCanvas.width / imgObj.width, snapCanvas.height / imgObj.height);
-                    const x = (snapCanvas.width / 2) - (imgObj.width / 2) * scale;
-                    const y = (snapCanvas.height / 2) - (imgObj.height / 2) * scale;
-                    
+                    const scale = Math.max(targetCropW / imgObj.width, targetCropH / imgObj.height);
+                    const x = (targetCropW / 2) - (imgObj.width / 2) * scale;
+                    const y = (targetCropH / 2) - (imgObj.height / 2) * scale;
                     snapCtx.drawImage(imgObj, x, y, imgObj.width * scale, imgObj.height * scale);
-                    snapCtx.filter = 'none';
-
-                    const normalizedUrl = snapCanvas.toDataURL('image/jpeg');
-                    capturedImages[targetIndex] = normalizedUrl;
-
-                    const displayImg = document.createElement('img');
-                    displayImg.src = normalizedUrl;
                     
-                    const slot = document.getElementById(`slot-${targetIndex}`);
-                    slot.innerHTML = '';
-                    slot.appendChild(displayImg);
-
-                    // Auto-advance to the next slot for convenience
-                    if (targetIndex < 3) {
-                        const nextSlot = document.getElementById(`slot-${targetIndex + 1}`);
-                        document.querySelectorAll('.strip-slot').forEach(s => s.classList.remove('selected'));
-                        nextSlot.classList.add('selected');
-                        selectedSlotIndex = targetIndex + 1;
+                    if(currentWatermarkContent) {
+                        snapCtx.restore(); snapCtx.save();
+                        snapCtx.fillStyle = "rgba(255,255,255,0.75)"; snapCtx.font = "bold 13px monospace"; snapCtx.textAlign = "right";
+                        snapCtx.fillText(currentWatermarkContent, targetCropW - 15, targetCropH - 15);
                     }
-
-                    updateDownloadButtonVisibility();
+                    snapCtx.restore();
+                    capturedImages[targetIndex] = snapCanvas.toDataURL('image/jpeg', 0.9);
+                    if (targetIndex < 3) selectedSlotIndex = targetIndex + 1;
+                    renderSlotsFromData();
                 };
             };
-            reader.readAsDataURL(file);
-            // Clear value to allow re-uploading the same file if wanted
-            e.target.value = '';
+            reader.readAsDataURL(file); e.target.value = '';
         });
 
-        function updateDownloadButtonVisibility() {
-            // Show export button if at least one image exists
-            const hasImages = capturedImages.some(img => img !== null);
-            downloadBtn.style.display = hasImages ? 'block' : 'none';
-        }
+        function updateDownloadButtonVisibility() { downloadBtn.style.display = capturedImages.some(img => img !== null) ? 'block' : 'none'; }
 
         downloadBtn.addEventListener('click', () => {
-            const stripCanvas = document.createElement('canvas');
-            const stripCtx = stripCanvas.getContext('2d');
+            const stripCanvas = document.createElement('canvas'); const stripCtx = stripCanvas.getContext('2d');
+            const imgW = targetCropW; const imgH = targetCropH;
+            const padding = 40; const gap = 25; const footerH = 90;
 
-            const imgW = 400;
-            const imgH = 300;
-            const padding = 30;
-            const gap = 20;
-            const footerH = 80;
-
-            stripCanvas.width = imgW + (padding * 2);
-            stripCanvas.height = (imgH * 4) + (gap * 3) + (padding * 2) + footerH;
-
-            stripCtx.fillStyle = currentBgColor;
-            stripCtx.fillRect(0, 0, stripCanvas.width, stripCanvas.height);
-
-            let imagesLoaded = 0;
-            let imagesToLoad = 0;
-
-            // Count valid images to print
-            for(let i = 0; i < 4; i++) {
-                if(capturedImages[i]) imagesToLoad++;
+            if (activeLayout === 'layout-strip') {
+                stripCanvas.width = imgW + (padding * 2); stripCanvas.height = (imgH * 4) + (gap * 3) + (padding * 2) + footerH;
+            } else {
+                stripCanvas.width = (imgW * 2) + gap + (padding * 2); stripCanvas.height = (imgH * 2) + gap + (padding * 2) + footerH;
             }
 
-            if(imagesToLoad === 0) return;
+            stripCtx.fillStyle = currentBgColor; stripCtx.fillRect(0, 0, stripCanvas.width, stripCanvas.height);
+            let placementMap = [];
 
-            for(let i = 0; i < 4; i++) {
-                if(!capturedImages[i]) continue;
-
-                const img = new Image();
-                img.src = capturedImages[i];
-                img.onload = ((currentIndex) => {
-                    return () => {
-                        const x = padding;
-                        const y = padding + (currentIndex * (imgH + gap));
-                        stripCtx.drawImage(img, x, y, imgW, imgH);
-                        imagesLoaded++;
-                        checkComplete();
-                    };
-                })(i);
-            }
-
-            function checkComplete() {
-                if (imagesLoaded === imagesToLoad) {
-                    stripCtx.fillStyle = currentTextColor;
-                    stripCtx.font = `bold 22px ${currentTextFont}`;
-                    stripCtx.textBaseline = "middle";
-                    stripCtx.textAlign = "center";
-                    stripCtx.fillText(currentTextContent, stripCanvas.width / 2, stripCanvas.height - 45);
-
-                    const link = document.createElement('a');
-                    link.download = 'ctrl_q_strip.jpg';
-                    link.href = stripCanvas.toDataURL('image/jpeg', 0.95);
-                    link.click();
+            if (activeLayout === 'layout-strip') {
+                let currentSlotY = padding;
+                for (let i = 0; i < 4; i++) {
+                    if (capturedImages[i]) placementMap.push({ src: capturedImages[i], x: padding, y: currentSlotY });
+                    currentSlotY += (imgH + gap);
+                }
+            } else {
+                const matrixCoords = [
+                    { x: padding, y: padding }, { x: padding + imgW + gap, y: padding },
+                    { x: padding, y: padding + imgH + gap }, { x: padding + imgW + gap, y: padding + imgH + gap }
+                ];
+                let coordsIdx = 0;
+                for (let i = 0; i < 4; i++) {
+                    if (capturedImages[i]) { placementMap.push({ src: capturedImages[i], x: matrixCoords[coordsIdx].x, y: matrixCoords[coordsIdx].y }); coordsIdx++; }
                 }
             }
+
+            let loaded = 0;
+            if(placementMap.length === 0) return;
+            placementMap.forEach((item) => {
+                const img = new Image(); img.src = item.src;
+                img.onload = () => {
+                    stripCtx.drawImage(img, item.x, item.y, imgW, imgH); loaded++;
+                    if (loaded === placementMap.length) {
+                        stripCtx.fillStyle = currentTextColor; stripCtx.font = `bold 26px ${currentTextFont}`;
+                        stripCtx.textBaseline = "middle"; stripCtx.textAlign = "center";
+                        stripCtx.fillText(currentTextContent, stripCanvas.width / 2, stripCanvas.height - 50);
+
+                        const link = document.createElement('a'); link.download = 'ctrl_q_studio.jpg';
+                        link.href = stripCanvas.toDataURL('image/jpeg', 0.95); link.click();
+                    }
+                };
+            });
         });
     </script>
 </body>
