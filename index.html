@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CTRL + Q Photo Booth</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+            --panel-bg: rgba(255, 255, 255, 0.85);
+            --border-color: rgba(0, 0, 0, 0.08);
+            --accent-primary: #4f46e5;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --strip-bg: #ffffff;
+            --strip-text: #0f172a;
+            --strip-font: 'Georgia', serif;
+        }
+
+        body {
+            font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            scroll-behavior: smooth;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* --- Hero / Landing Page Section --- */
+        .hero-screen {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            background: radial-gradient(circle at center, rgba(79, 70, 229, 0.05) 0%, transparent 70%);
+        }
+
+        .hero-content {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            margin: 0 0 20px 0;
+            background: linear-gradient(to right, #0f172a, #4f46e5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @media (min-width: 768px) {
+            .hero-title { font-size: 3.5rem; }
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 40px;
+            padding: 0 10px;
+        }
+
+        /* --- Section Configurations --- */
+        .section-container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 50px 15px;
+            box-sizing: border-box;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+            color: var(--text-main);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .about-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            text-align: left;
+        }
+
+        .about-card h3 {
+            color: var(--accent-primary);
+            margin-top: 0;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .about-card p {
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 0;
+            font-size: 0.95rem;
+        }
+
+        /* --- Main App Interface Layout --- */
+        .app-content {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 15px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .app-content.active {
+            display: flex;
+        }
+
+        .workspace-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        @media (min-width: 992px) {
+            .workspace-container {
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: center;
+                gap: 40px;
+                margin-top: 40px;
+            }
+        }
+
+        .control-side, .strip-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 24px;
+            width: 100%;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 576px) {
+            .control-side, .strip-side { padding: 30px; }
+        }
+        
+        .control-side { max-width: 500px; }
+        .strip-side { max-width: 360px; }
+
+        /* --- Camera Box & Filters --- */
+        .camera-box {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        .f-normal { filter: none; }
+        .f-vintage { filter: sepia(0.4) contrast(1.1) brightness(0.95); }
+        .f-mono { filter: grayscale(1) contrast(1.25); }
+        .f-warm { filter: saturate(1.2) sepia(0.1) brightness(1.02); }
+        .f-cool { filter: saturate(0.95) hue-rotate(15deg) brightness(1.02); }
+
+        #countdown {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--text-main);
+            z-index: 5;
+        }
+
+        /* --- Customization Panels --- */
+        .options-panel {
+            width: 100%;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .option-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .pill-select {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            width: 100%;
+            scrollbar-width: none; /* Hide scrollbar for clean mobile view */
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .pill-select::-webkit-scrollbar {
+            display: none;
+        }
+
+        .pill {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            white-space: nowrap;
+            color: var(--text-main);
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .pill:hover {
+            border-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .pill.active {
+            background: #0f172a;
+            color: #ffffff;
+            border-color: #0f172a;
+            font-weight: 600;
+        }
+
+        .action-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        button {
+            background: #0f172a;
+            color: #ffffff;
+            border: none;
+            padding: 14px 24px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button:disabled {
+            background: #cbd5e1;
+            color: #94a3b8;
+            cursor: not-allowed;
+            opacity: 1;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .upload-btn-wrapper {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+        
+        .upload-btn-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0; top: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- Photobooth Strip Preview --- */
+        .photo-strip {
+            width: 100%;
+            max-width: 180px;
+            background: var(--strip-bg);
+            padding: 14px 14px 24px 14px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: background 0.2s, color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .strip-slot {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: #f1f5f9;
+            border-radius: 1px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .strip-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .strip-slot span {
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .strip-footer {
+            text-align: center;
+            font-family: var(--strip-font);
+            font-size: 0.8rem;
+            color: var(--strip-text);
+            margin-top: 5px;
+            letter-spacing: 2px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        canvas {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hero-screen" id="hero-screen">
+        <div class="hero-content">
+            <h1 class="hero-title">CTRL + Q Photo Booth</h1>
+            <p class="hero-description">
+                An instant browser-based studio designed for clean, minimalist output creation. 
+                Configure filters dynamically, select refined canvas profiles, capture live output assets, or 
+                process local media records through downscaled strip compilation matrix logic instantly.
+            </p>
+            <button id="enter-booth-btn" style="max-width: 240px; margin-bottom: 40px;">Let's Move To Booth!</button>
+        </div>
+
+        <div class="section-container">
+            <h2 class="section-title">About The Platform</h2>
+            <div class="about-grid">
+                <div class="about-card">
+                    <h3>Technical Precision</h3>
+                    <p>Engineered to process real-time media streams and dynamic script actions on local machine environments via low-overhead canvas operations.</p>
+                </div>
+                <div class="about-card">
+                    <h3>Absolute Privacy</h3>
+                    <p>Your processes remain yours. All image manipulation layers execute directly inside your browser cache instance. Zero remote asset data synchronization occurs.</p>
+                </div>
+                <div class="about-card">
+                    <h3>Flexible Input</h3>
+                    <p>Seamless transition between operational hardware configurations. Utilize standard webcam streams or select image arrays from system files effortlessly.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-content" id="app-content">
+        <h1 class="hero-title" style="font-size: 2rem; margin-bottom: 0;">CTRL + Q Photo Booth</h1>
+        <p style="color: var(--text-muted); margin-top: 6px; margin-bottom: 15px; text-align: center;">Configure studio profile settings below</p>
+
+        <div class="workspace-container">
+            <div class="control-side">
+                <div class="camera-box">
+                    <video id="video" class="f-normal" autoplay playsinline></video>
+                    <div id="countdown">3</div>
+                </div>
+
+                <div class="options-panel">
+                    <div class="option-group">
+                        <div class="option-label">Filter Processing</div>
+                        <div class="pill-select" id="filter-select">
+                            <div class="pill active" data-filter="f-normal">Original</div>
+                            <div class="pill" data-filter="f-vintage">Vintage</div>
+                            <div class="pill" data-filter="f-mono">Monochrome</div>
+                            <div class="pill" data-filter="f-warm">Warm Linear</div>
+                            <div class="pill" data-filter="f-cool">Cool Matrix</div>
+                        </div>
+                    </div>
+
+                    <div class="option-group">
+                        <div class="option-label">Strip Color Profile</div>
+                        <div class="pill-select" id="theme-select">
+                            <div class="pill active" data-bg="#ffffff" data-name="Classic Stark">Stark White</div>
+                            <div class="pill" data-bg="#f8fafc" data-name="Slate">Slate Tint</div>
+                            <div class="pill" data-bg="#fef2f2" data-name="Blush">Blush Tint</div>
+                            <div class="pill" data-bg="#f0fdf4" data-name="Mint">Mint Tint</div>
+                            <div class="pill" data-bg="#eff6ff" data-name="Sky">Sky Tint</div>
+                            <div class="pill" data-bg="#0f172a" data-name="Obsidian">Obsidian Dark</div>
+                        </div>
+                    </div>
+
+                    <div class="option-group">
+                        <div class="option-label">Strip Text Configuration</div>
+                        <div class="pill-select" id="text-select">
+                            <div class="pill active" data-color="#0f172a" data-font="'Georgia', serif" data-text="CHRONICLE">Chronicle (Serif)</div>
+                            <div class="pill" data-color="#475569" data-font="-apple-system, sans-serif" data-text="MEMORIES">Memories (Sans)</div>
+                            <div class="pill" data-color="#1e1b4b" data-font="'Courier New', monospace" data-text="CAPTURE.LOG">Capture (Mono)</div>
+                            <div class="pill" data-color="#dc2626" data-font="'Georgia', serif" data-text="ARCHIVE">Archive (Red)</div>
+                            <div class="pill" data-color="#ffffff" data-font="-apple-system, sans-serif" data-text="MINIMAL">Minimal (Light)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-btns">
+                    <button id="start-btn">Capture Session Sequence</button>
+                    
+                    <div class="upload-btn-wrapper">
+                        <button class="btn-secondary">Batch Upload Media Grid</button>
+                        <input type="file" id="gallery-upload" accept="image/*" multiple />
+                    </div>
+
+                    <button id="download-btn" style="background-color: var(--accent-primary); color: #ffffff; display: none;">Compile and Export Strip</button>
+                </div>
+            </div>
+
+            <div class="strip-side">
+                <div class="photo-strip" id="photo-strip">
+                    <div class="strip-slot" id="slot-0"><span style="color:#94a3b8;">Slot 1</span></div>
+                    <div class="strip-slot" id="slot-1"><span style="color:#94a3b8;">Slot 2</span></div>
+                    <div class="strip-slot" id="slot-2"><span style="color:#94a3b8;">Slot 3</span></div>
+                    <div class="strip-slot" id="slot-3"><span style="color:#94a3b8;">Slot 4</span></div>
+                    <div class="strip-footer" id="strip-footer-text">CHRONICLE</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="snapshot-canvas" width="640" height="480"></canvas>
+
+    <script>
+        const heroScreen = document.getElementById('hero-screen');
+        const enterBoothBtn = document.getElementById('enter-booth-btn');
+        const appContent = document.getElementById('app-content');
+
+        const video = document.getElementById('video');
+        const snapCanvas = document.getElementById('snapshot-canvas');
+        const startBtn = document.getElementById('start-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const countdownEl = document.getElementById('countdown');
+        const galleryUpload = document.getElementById('gallery-upload');
+        const photoStrip = document.getElementById('photo-strip');
+        const footerText = document.getElementById('strip-footer-text');
+        const snapCtx = snapCanvas.getContext('2d');
+
+        let photoCount = 0;
+        const totalPhotos = 4;
+        let capturedImages = []; 
+        let activeFilter = 'f-normal';
+
+        let currentBgColor = '#ffffff';
+        let currentTextColor = '#0f172a';
+        let currentTextFont = "'Georgia', serif";
+        let currentTextContent = 'CHRONICLE';
+
+        const filterCanvasMap = {
+            'f-normal': (ctx) => {},
+            'f-vintage': (ctx) => {
+                ctx.filter = 'sepia(0.4) contrast(1.1) brightness(0.95)';
+            },
+            'f-mono': (ctx) => {
+                ctx.filter = 'grayscale(1) contrast(1.25)';
+            },
+            'f-warm': (ctx) => {
+                ctx.filter = 'saturate(1.2) sepia(0.1) brightness(1.02)';
+            },
+            'f-cool': (ctx) => {
+                ctx.filter = 'saturate(0.95) hue-rotate(15deg) brightness(1.02)';
+            }
+        };
+
+        enterBoothBtn.addEventListener('click', () => {
+            heroScreen.style.display = 'none';
+            appContent.classList.add('active');
+            window.scrollTo({ top: 0 });
+            initCamera();
+        });
+
+        async function initCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: false });
+                video.srcObject = stream;
+            } catch (err) {
+                console.warn("Webcam access restricted or unavailable.");
+            }
+        }
+
+        document.getElementById('filter-select').addEventListener('click', (e) => {
+            if(e.target.classList.contains('pill')) {
+                document.querySelectorAll('#filter-select .pill').forEach(p => p.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                video.className = '';
+                activeFilter = e.target.getAttribute('data-filter');
+                video.classList.add(activeFilter);
+            }
+        });
+
+        document.getElementById('theme-select').addEventListener('click', (e) => {
+            if(e.target.classList.contains('pill')) {
+                document.querySelectorAll('#theme-select .pill').forEach(p => p.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                currentBgColor = e.target.getAttribute('data-bg');
+                photoStrip.style.backgroundColor = currentBgColor;
+            }
+        });
+
+        document.getElementById('text-select').addEventListener('click', (e) => {
+            if(e.target.classList.contains('pill')) {
+                document.querySelectorAll('#text-select .pill').forEach(p => p.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                currentTextColor = e.target.getAttribute('data-color');
+                currentTextFont = e.target.getAttribute('data-font');
+                currentTextContent = e.target.getAttribute('data-text');
+                
+                footerText.style.color = currentTextColor;
+                footerText.style.fontFamily = currentTextFont;
+                footerText.innerText = currentTextContent;
+            }
+        });
+
+        startBtn.addEventListener('click', () => {
+            photoCount = 0;
+            capturedImages = [];
+            startBtn.disabled = true;
+            downloadBtn.style.display = 'none';
+            
+            for(let i=0; i<4; i++) {
+                document.getElementById(`slot-${i}`).innerHTML = `<span style="color:#94a3b8;">Processing...</span>`;
+            }
+            takeNextPhotoStrip();
+        });
+
+        function takeNextPhotoStrip() {
+            if (photoCount < totalPhotos) {
+                let timeLeft = 3;
+                countdownEl.style.display = 'flex';
+                countdownEl.innerText = timeLeft;
+
+                const timer = setInterval(() => {
+                    timeLeft--;
+                    if (timeLeft > 0) {
+                        countdownEl.innerText = timeLeft;
+                    } else {
+                        clearInterval(timer);
+                        countdownEl.style.display = 'none';
+                        capturePhoto();
+                        photoCount++;
+                        setTimeout(takeNextPhotoStrip, 800);
+                    }
+                }, 1000);
+            } else {
+                startBtn.disabled = false;
+                downloadBtn.style.display = 'block';
+            }
+        }
+
+        function capturePhoto() {
+            snapCtx.clearRect(0, 0, snapCanvas.width, snapCanvas.height);
+            snapCtx.save();
+            
+            snapCtx.translate(snapCanvas.width, 0);
+            snapCtx.scale(-1, 1);
+            
+            if (filterCanvasMap[activeFilter]) {
+                filterCanvasMap[activeFilter](snapCtx);
+            }
+            
+            snapCtx.drawImage(video, 0, 0, snapCanvas.width, snapCanvas.height);
+            snapCtx.restore();
+            snapCtx.filter = 'none';
+
+            const dataUrl = snapCanvas.toDataURL('image/jpeg');
+            capturedImages.push(dataUrl);
+
+            const img = document.createElement('img');
+            img.src = dataUrl;
+            
+            const slot = document.getElementById(`slot-${photoCount}`);
+            slot.innerHTML = '';
+            slot.appendChild(img);
+        }
+
+        galleryUpload.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files).slice(0, 4);
+            if(files.length === 0) return;
+
+            capturedImages = [];
+            photoCount = 0;
+            downloadBtn.style.display = 'none';
+
+            files.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const imgObj = new Image();
+                    imgObj.src = event.target.result;
+                    imgObj.onload = () => {
+                        snapCtx.clearRect(0, 0, snapCanvas.width, snapCanvas.height);
+                        
+                        if (filterCanvasMap[activeFilter]) {
+                            filterCanvasMap[activeFilter](snapCtx);
+                        }
+                        
+                        const scale = Math.max(snapCanvas.width / imgObj.width, snapCanvas.height / imgObj.height);
+                        const x = (snapCanvas.width / 2) - (imgObj.width / 2) * scale;
+                        const y = (snapCanvas.height / 2) - (imgObj.height / 2) * scale;
+                        
+                        snapCtx.drawImage(imgObj, x, y, imgObj.width * scale, imgObj.height * scale);
+                        snapCtx.filter = 'none';
+
+                        const normalizedUrl = snapCanvas.toDataURL('image/jpeg');
+                        capturedImages[index] = normalizedUrl;
+
+                        const displayImg = document.createElement('img');
+                        displayImg.src = normalizedUrl;
+                        
+                        const slot = document.getElementById(`slot-${index}`);
+                        slot.innerHTML = '';
+                        slot.appendChild(displayImg);
+
+                        photoCount++;
+                        if(photoCount === files.length || photoCount === 4) {
+                            downloadBtn.style.display = 'block';
+                        }
+                    };
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            if(capturedImages.length === 0) return;
+
+            const stripCanvas = document.createElement('canvas');
+            const stripCtx = stripCanvas.getContext('2d');
+
+            const imgW = 400;
+            const imgH = 300;
+            const padding = 30;
+            const gap = 20;
+            const footerH = 80;
+
+            stripCanvas.width = imgW + (padding * 2);
+            stripCanvas.height = (imgH * 4) + (gap * 3) + (padding * 2) + footerH;
+
+            stripCtx.fillStyle = currentBgColor;
+            stripCtx.fillRect(0, 0, stripCanvas.width, stripCanvas.height);
+
+            let imagesLoaded = 0;
+            for(let i = 0; i < 4; i++) {
+                if(!capturedImages[i]) {
+                    imagesLoaded++;
+                    checkComplete();
+                    continue;
+                }
+
+                const img = new Image();
+                img.src = capturedImages[i];
+                img.onload = ((currentIndex) => {
+                    return () => {
+                        const x = padding;
+                        const y = padding + (currentIndex * (imgH + gap));
+                        stripCtx.drawImage(img, x, y, imgW, imgH);
+                        imagesLoaded++;
+                        checkComplete();
+                    };
+                })(i);
+            }
+
+            function checkComplete() {
+                if (imagesLoaded === totalPhotos) {
+                    stripCtx.fillStyle = currentTextColor;
+                    stripCtx.font = `bold 22px ${currentTextFont}`;
+                    stripCtx.textBaseline = "middle";
+                    stripCtx.textAlign = "center";
+                    stripCtx.fillText(currentTextContent, stripCanvas.width / 2, stripCanvas.height - 45);
+
+                    const link = document.createElement('a');
+                    link.download = 'ctrl_q_strip.jpg';
+                    link.href = stripCanvas.toDataURL('image/jpeg', 0.95);
+                    link.click();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
