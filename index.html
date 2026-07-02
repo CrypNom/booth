@@ -239,7 +239,7 @@
             overflow-x: auto;
             padding-bottom: 6px;
             width: 100%;
-            scrollbar-width: none; /* Hide scrollbar for clean mobile view */
+            scrollbar-width: none;
             -webkit-overflow-scrolling: touch;
         }
         
@@ -381,16 +381,16 @@
         }
     </style>
     <meta property="og:type" content="website">
-<meta property="og:url" content="https://crypnom.github.io/booth/">
-<meta property="og:title" content="CTRL + Q Photo Booth">
-<meta property="og:description" content="An instant browser-based studio designed for clean, minimalist output creation. Process filters, canvases, and media strips instantly.">
-<meta property="og:image" content="https://raw.githubusercontent.com/CrypNom/booth/main/og-cover.png">
+    <meta property="og:url" content="https://crypnom.github.io/booth/">
+    <meta property="og:title" content="CTRL + Q Photo Booth">
+    <meta property="og:description" content="An instant browser-based studio designed for clean, minimalist output creation. Process filters, canvases, and media strips instantly.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/CrypNom/booth/main/og-cover.png">
 
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:url" content="https://crypnom.github.io/booth/">
-<meta name="twitter:title" content="CTRL + Q Photo Booth">
-<meta name="twitter:description" content="An instant browser-based studio designed for clean, minimalist output creation. Process filters, canvases, and media strips instantly.">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/CrypNom/booth/main/og-cover.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://crypnom.github.io/booth/">
+    <meta name="twitter:title" content="CTRL + Q Photo Booth">
+    <meta name="twitter:description" content="An instant browser-based studio designed for clean, minimalist output creation. Process filters, canvases, and media strips instantly.">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/CrypNom/booth/main/og-cover.png">
 </head>
 <body>
 
@@ -546,11 +546,30 @@
         });
 
         async function initCamera() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert("Your current profile or browser wrapper environment blocks camera streaming services. Ensure you are using a secure context layer (HTTPS).");
+                return;
+            }
+
+            const constraints = {
+                video: {
+                    width: { ideal: 640 },
+                    height: { ideal: 480 },
+                    facingMode: "user"
+                },
+                audio: false
+            };
+
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: false });
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
                 video.srcObject = stream;
+                
+                video.onloadedmetadata = () => {
+                    video.play().catch(e => console.error("Auto playback restricted:", e));
+                };
             } catch (err) {
-                console.warn("Webcam access restricted or unavailable.");
+                console.warn("Media hardware mapping failed natively:", err);
+                alert(`Could not target active hardware camera index input stream. Profile state: ${err.name}`);
             }
         }
 
