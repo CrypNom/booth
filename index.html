@@ -345,12 +345,20 @@
             width: 100%;
             aspect-ratio: 4/3;
             background: #f1f5f9;
-            border-radius: 1px;
+            border: 2px solid transparent;
+            border-radius: 4px;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .strip-slot.selected {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
         }
 
         .strip-slot img {
@@ -363,6 +371,7 @@
             font-size: 0.7rem;
             letter-spacing: 0.05em;
             text-transform: uppercase;
+            pointer-events: none;
         }
 
         .strip-footer {
@@ -426,7 +435,7 @@
 
     <div class="app-content" id="app-content">
         <h1 class="hero-title" style="font-size: 2rem; margin-bottom: 0;">CTRL + Q Photo Booth</h1>
-        <p style="color: var(--text-muted); margin-top: 6px; margin-bottom: 15px; text-align: center;">Configure studio profile settings below</p>
+        <p style="color: var(--text-muted); margin-top: 6px; margin-bottom: 15px; text-align: center;">Configure studio profile settings below. Tap a slot on the strip to target it explicitly.</p>
 
         <div class="workspace-container">
             <div class="control-side">
@@ -475,8 +484,8 @@
                     <button id="start-btn">Capture Session Sequence</button>
                     
                     <div class="upload-btn-wrapper">
-                        <button class="btn-secondary">Batch Upload Media Grid</button>
-                        <input type="file" id="gallery-upload" accept="image/*" multiple />
+                        <button class="btn-secondary">Upload Media Asset</button>
+                        <input type="file" id="gallery-upload" accept="image/*" />
                     </div>
 
                     <button id="download-btn" style="background-color: var(--accent-primary); color: #ffffff; display: none;">Compile and Export Strip</button>
@@ -485,10 +494,10 @@
 
             <div class="strip-side">
                 <div class="photo-strip" id="photo-strip">
-                    <div class="strip-slot" id="slot-0"><span style="color:#94a3b8;">Slot 1</span></div>
-                    <div class="strip-slot" id="slot-1"><span style="color:#94a3b8;">Slot 2</span></div>
-                    <div class="strip-slot" id="slot-2"><span style="color:#94a3b8;">Slot 3</span></div>
-                    <div class="strip-slot" id="slot-3"><span style="color:#94a3b8;">Slot 4</span></div>
+                    <div class="strip-slot selected" id="slot-0" data-index="0"><span style="color:#94a3b8;">Slot 1</span></div>
+                    <div class="strip-slot" id="slot-1" data-index="1"><span style="color:#94a3b8;">Slot 2</span></div>
+                    <div class="strip-slot" id="slot-2" data-index="2"><span style="color:#94a3b8;">Slot 3</span></div>
+                    <div class="strip-slot" id="slot-3" data-index="3"><span style="color:#94a3b8;">Slot 4</span></div>
                     <div class="strip-footer" id="strip-footer-text">CHRONICLE</div>
                 </div>
             </div>
@@ -514,8 +523,9 @@
 
         let photoCount = 0;
         const totalPhotos = 4;
-        let capturedImages = []; 
+        let capturedImages = new Array(4).fill(null); 
         let activeFilter = 'f-normal';
+        let selectedSlotIndex = 0;
 
         let currentBgColor = '#ffffff';
         let currentTextColor = '#0f172a';
@@ -573,6 +583,15 @@
             }
         }
 
+        // Slot selection listener
+        document.querySelectorAll('.strip-slot').forEach(slot => {
+            slot.addEventListener('click', (e) => {
+                document.querySelectorAll('.strip-slot').forEach(s => s.classList.remove('selected'));
+                slot.classList.add('selected');
+                selectedSlotIndex = parseInt(slot.getAttribute('data-index'));
+            });
+        });
+
         document.getElementById('filter-select').addEventListener('click', (e) => {
             if(e.target.classList.contains('pill')) {
                 document.querySelectorAll('#filter-select .pill').forEach(p => p.classList.remove('active'));
@@ -611,7 +630,7 @@
 
         startBtn.addEventListener('click', () => {
             photoCount = 0;
-            capturedImages = [];
+            capturedImages = new Array(4).fill(null);
             startBtn.disabled = true;
             downloadBtn.style.display = 'none';
             
@@ -634,18 +653,18 @@
                     } else {
                         clearInterval(timer);
                         countdownEl.style.display = 'none';
-                        capturePhoto();
+                        capturePhoto(photoCount);
                         photoCount++;
                         setTimeout(takeNextPhotoStrip, 800);
                     }
                 }, 1000);
             } else {
                 startBtn.disabled = false;
-                downloadBtn.style.display = 'block';
+                updateDownloadButtonVisibility();
             }
         }
 
-        function capturePhoto() {
+        function capturePhoto(targetSlot) {
             snapCtx.clearRect(0, 0, snapCanvas.width, snapCanvas.height);
             snapCtx.save();
             
@@ -661,66 +680,74 @@
             snapCtx.filter = 'none';
 
             const dataUrl = snapCanvas.toDataURL('image/jpeg');
-            capturedImages.push(dataUrl);
+            capturedImages[targetSlot] = dataUrl;
 
             const img = document.createElement('img');
             img.src = dataUrl;
             
-            const slot = document.getElementById(`slot-${photoCount}`);
+            const slot = document.getElementById(`slot-${targetSlot}`);
             slot.innerHTML = '';
             slot.appendChild(img);
+            updateDownloadButtonVisibility();
         }
 
         galleryUpload.addEventListener('change', (e) => {
-            const files = Array.from(e.target.files).slice(0, 4);
-            if(files.length === 0) return;
+            const file = e.target.files[0];
+            if (!file) return;
 
-            capturedImages = [];
-            photoCount = 0;
-            downloadBtn.style.display = 'none';
+            const targetIndex = selectedSlotIndex;
 
-            files.forEach((file, index) => {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    const imgObj = new Image();
-                    imgObj.src = event.target.result;
-                    imgObj.onload = () => {
-                        snapCtx.clearRect(0, 0, snapCanvas.width, snapCanvas.height);
-                        
-                        if (filterCanvasMap[activeFilter]) {
-                            filterCanvasMap[activeFilter](snapCtx);
-                        }
-                        
-                        const scale = Math.max(snapCanvas.width / imgObj.width, snapCanvas.height / imgObj.height);
-                        const x = (snapCanvas.width / 2) - (imgObj.width / 2) * scale;
-                        const y = (snapCanvas.height / 2) - (imgObj.height / 2) * scale;
-                        
-                        snapCtx.drawImage(imgObj, x, y, imgObj.width * scale, imgObj.height * scale);
-                        snapCtx.filter = 'none';
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const imgObj = new Image();
+                imgObj.src = event.target.result;
+                imgObj.onload = () => {
+                    snapCtx.clearRect(0, 0, snapCanvas.width, snapCanvas.height);
+                    
+                    if (filterCanvasMap[activeFilter]) {
+                        filterCanvasMap[activeFilter](snapCtx);
+                    }
+                    
+                    const scale = Math.max(snapCanvas.width / imgObj.width, snapCanvas.height / imgObj.height);
+                    const x = (snapCanvas.width / 2) - (imgObj.width / 2) * scale;
+                    const y = (snapCanvas.height / 2) - (imgObj.height / 2) * scale;
+                    
+                    snapCtx.drawImage(imgObj, x, y, imgObj.width * scale, imgObj.height * scale);
+                    snapCtx.filter = 'none';
 
-                        const normalizedUrl = snapCanvas.toDataURL('image/jpeg');
-                        capturedImages[index] = normalizedUrl;
+                    const normalizedUrl = snapCanvas.toDataURL('image/jpeg');
+                    capturedImages[targetIndex] = normalizedUrl;
 
-                        const displayImg = document.createElement('img');
-                        displayImg.src = normalizedUrl;
-                        
-                        const slot = document.getElementById(`slot-${index}`);
-                        slot.innerHTML = '';
-                        slot.appendChild(displayImg);
+                    const displayImg = document.createElement('img');
+                    displayImg.src = normalizedUrl;
+                    
+                    const slot = document.getElementById(`slot-${targetIndex}`);
+                    slot.innerHTML = '';
+                    slot.appendChild(displayImg);
 
-                        photoCount++;
-                        if(photoCount === files.length || photoCount === 4) {
-                            downloadBtn.style.display = 'block';
-                        }
-                    };
+                    // Auto-advance to the next slot for convenience
+                    if (targetIndex < 3) {
+                        const nextSlot = document.getElementById(`slot-${targetIndex + 1}`);
+                        document.querySelectorAll('.strip-slot').forEach(s => s.classList.remove('selected'));
+                        nextSlot.classList.add('selected');
+                        selectedSlotIndex = targetIndex + 1;
+                    }
+
+                    updateDownloadButtonVisibility();
                 };
-                reader.readAsDataURL(file);
-            });
+            };
+            reader.readAsDataURL(file);
+            // Clear value to allow re-uploading the same file if wanted
+            e.target.value = '';
         });
 
-        downloadBtn.addEventListener('click', () => {
-            if(capturedImages.length === 0) return;
+        function updateDownloadButtonVisibility() {
+            // Show export button if at least one image exists
+            const hasImages = capturedImages.some(img => img !== null);
+            downloadBtn.style.display = hasImages ? 'block' : 'none';
+        }
 
+        downloadBtn.addEventListener('click', () => {
             const stripCanvas = document.createElement('canvas');
             const stripCtx = stripCanvas.getContext('2d');
 
@@ -737,12 +764,17 @@
             stripCtx.fillRect(0, 0, stripCanvas.width, stripCanvas.height);
 
             let imagesLoaded = 0;
+            let imagesToLoad = 0;
+
+            // Count valid images to print
             for(let i = 0; i < 4; i++) {
-                if(!capturedImages[i]) {
-                    imagesLoaded++;
-                    checkComplete();
-                    continue;
-                }
+                if(capturedImages[i]) imagesToLoad++;
+            }
+
+            if(imagesToLoad === 0) return;
+
+            for(let i = 0; i < 4; i++) {
+                if(!capturedImages[i]) continue;
 
                 const img = new Image();
                 img.src = capturedImages[i];
@@ -758,7 +790,7 @@
             }
 
             function checkComplete() {
-                if (imagesLoaded === totalPhotos) {
+                if (imagesLoaded === imagesToLoad) {
                     stripCtx.fillStyle = currentTextColor;
                     stripCtx.font = `bold 22px ${currentTextFont}`;
                     stripCtx.textBaseline = "middle";
