@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CTRL + Q Photo Booth Pro Studio</title>
+    <title>CTRL + Q Photo Booth</title>
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
-            --panel-bg: rgba(255, 255, 255, 0.9);
+            --panel-bg: rgba(255, 255, 255, 0.85);
             --border-color: rgba(0, 0, 0, 0.08);
             --accent-primary: #4f46e5;
             --text-main: #0f172a;
             --text-muted: #475569;
-            --strip-bg: #ffffff;
             --strip-text: #0f172a;
             --strip-font: 'Georgia', serif;
         }
@@ -42,7 +41,10 @@
             background: radial-gradient(circle at center, rgba(79, 70, 229, 0.05) 0%, transparent 70%);
         }
 
-        .hero-content { max-width: 800px; width: 100%; }
+        .hero-content {
+            max-width: 800px;
+            width: 100%;
+        }
 
         .hero-title {
             font-size: 2.5rem;
@@ -54,15 +56,19 @@
             -webkit-text-fill-color: transparent;
         }
 
-        @media (min-width: 768px) { .hero-title { font-size: 3.5rem; } }
+        @media (min-width: 768px) {
+            .hero-title { font-size: 3.5rem; }
+        }
 
         .hero-description {
             font-size: 1.1rem;
             color: var(--text-muted);
             line-height: 1.6;
             margin-bottom: 40px;
+            padding: 0 10px;
         }
 
+        /* --- Section Configurations --- */
         .section-container {
             max-width: 1100px;
             width: 100%;
@@ -72,9 +78,20 @@
             border-top: 1px solid var(--border-color);
         }
 
-        .section-title { font-size: 1.75rem; font-weight: 700; margin-bottom: 25px; text-align: center; }
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+            color: var(--text-main);
+        }
 
-        .about-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px; }
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
 
         .about-card {
             background: var(--panel-bg);
@@ -82,18 +99,55 @@
             padding: 25px;
             border-radius: 16px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            text-align: left;
         }
 
-        .about-card h3 { color: var(--accent-primary); margin-top: 0; font-size: 1.2rem; margin-bottom: 10px; }
-        .about-card p { color: var(--text-muted); line-height: 1.5; margin-bottom: 0; font-size: 0.95rem; }
+        .about-card h3 {
+            color: var(--accent-primary);
+            margin-top: 0;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .about-card p {
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 0;
+            font-size: 0.95rem;
+        }
 
         /* --- Main App Interface Layout --- */
-        .app-content { display: none; flex-direction: column; align-items: center; padding: 40px 15px; box-sizing: border-box; width: 100%; }
-        .app-content.active { display: flex; }
-        .workspace-container { display: flex; flex-direction: column; align-items: center; gap: 30px; max-width: 1200px; width: 100%; margin-top: 20px; }
+        .app-content {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 15px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .app-content.active {
+            display: flex;
+        }
+
+        .workspace-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+            margin-top: 20px;
+        }
 
         @media (min-width: 992px) {
-            .workspace-container { flex-direction: row; align-items: flex-start; justify-content: center; gap: 40px; margin-top: 40px; }
+            .workspace-container {
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: center;
+                gap: 40px;
+                margin-top: 40px;
+            }
         }
 
         .control-side, .strip-side {
@@ -109,9 +163,12 @@
             box-sizing: border-box;
         }
 
-        @media (min-width: 576px) { .control-side, .strip-side { padding: 30px; } }
+        @media (min-width: 576px) {
+            .control-side, .strip-side { padding: 30px; }
+        }
+        
         .control-side { max-width: 500px; }
-        .strip-side { max-width: 420px; }
+        .strip-side { max-width: 480px; min-width: 290px; }
 
         /* --- Camera Box & Filters --- */
         .camera-box {
@@ -122,99 +179,317 @@
             border-radius: 12px;
             overflow: hidden;
             border: 1px solid var(--border-color);
-            transition: aspect-ratio 0.3s;
         }
 
-        #video { width: 100%; height: 100%; object-fit: cover; }
-        .mirror-feed { transform: scaleX(-1); }
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        .f-normal { filter: none; }
+        .f-vintage { filter: sepia(0.4) contrast(1.1) brightness(0.95); }
+        .f-mono { filter: grayscale(1) contrast(1.25); }
+        .f-warm { filter: saturate(1.2) sepia(0.1) brightness(1.02); }
+        .f-cool { filter: saturate(0.95) hue-rotate(15deg) brightness(1.02); }
 
         #countdown {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255, 255, 255, 0.85);
-            display: none; justify-content: center; align-items: center;
-            font-size: 4rem; font-weight: 700; color: var(--text-main); z-index: 5;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--text-main);
+            z-index: 5;
         }
-
-        #flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; opacity: 0; z-index: 6; pointer-events: none; }
-        .flash-active { animation: flashAnim 0.4s ease-out; }
-        @keyframes flashAnim { 0% { opacity: 1; } 100% { opacity: 0; } }
 
         /* --- Customization Panels --- */
-        .options-panel { width: 100%; margin-top: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .option-group { display: flex; flex-direction: column; gap: 8px; width: 100%; overflow: hidden; }
-        .option-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .options-panel {
+            width: 100%;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .option-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .pill-select {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            width: 100%;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
         
-        .pill-select { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-        .pill-select::-webkit-scrollbar { display: none; }
-        
+        .pill-select::-webkit-scrollbar {
+            display: none;
+        }
+
         .pill {
-            background: #ffffff; border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 20px;
-            font-size: 0.85rem; cursor: pointer; white-space: nowrap; color: var(--text-main); transition: all 0.2s; flex-shrink: 0;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            white-space: nowrap;
+            color: var(--text-main);
+            transition: all 0.2s;
+            flex-shrink: 0;
         }
-        .pill:hover { border-color: rgba(0, 0, 0, 0.2); }
-        .pill.active { background: #0f172a; color: #ffffff; border-color: #0f172a; font-weight: 600; }
 
-        .slider-control { display: flex; align-items: center; gap: 12px; background: #ffffff; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); }
-        .slider-control input { flex: 1; accent-color: var(--accent-primary); }
-        .slider-control span { font-size: 0.8rem; min-width: 30px; font-weight: 600; text-align: right; }
+        .pill:hover {
+            border-color: rgba(0, 0, 0, 0.2);
+        }
 
-        .text-field-custom { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.9rem; box-sizing: border-box; outline: none; color: var(--text-main); }
-        .text-field-custom:focus { border-color: var(--accent-primary); }
+        .pill.active {
+            background: #0f172a;
+            color: #ffffff;
+            border-color: #0f172a;
+            font-weight: 600;
+        }
 
-        .action-btns { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 20px; }
-        .dual-btn-row { display: flex; gap: 10px; width: 100%; }
+        .action-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            margin-top: 20px;
+        }
 
-        button { background: #0f172a; color: #ffffff; border: none; padding: 14px 24px; font-size: 0.95rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.2s; width: 100%; box-sizing: border-box; }
-        button:hover { opacity: 0.9; }
-        button:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; }
-        .btn-secondary { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); }
+        button {
+            background: #0f172a;
+            color: #ffffff;
+            border: none;
+            padding: 14px 24px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button:disabled {
+            background: #cbd5e1;
+            color: #94a3b8;
+            cursor: not-allowed;
+            opacity: 1;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .upload-btn-wrapper {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
         
-        .upload-btn-wrapper { position: relative; overflow: hidden; width: 100%; }
-        .upload-btn-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+        .upload-btn-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0; top: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
 
-        /* --- Photobooth Strip Preview Layout Architecture --- */
+        /* --- Photobooth Strip Preview Grid Background Frameworks --- */
         .photo-strip {
-            width: 100%; max-width: 200px; background: var(--strip-bg); padding: 14px;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 12px;
-            border: 1px solid rgba(0,0,0,0.05); transition: background 0.2s, color 0.2s; box-sizing: border-box;
+            width: 100%;
+            padding: 18px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: background 0.2s, color 0.2s;
+            box-sizing: border-box;
+            display: grid;
+            background-color: #ffffff;
         }
 
-        .photo-strip.layout-strip { flex-direction: column; gap: 12px; padding-bottom: 24px; }
-        .photo-strip.layout-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 360px; padding-bottom: 40px; position: relative; }
-        .photo-strip.layout-grid .strip-footer { grid-column: span 2; position: absolute; bottom: 12px; left: 0; right: 0; }
+        /* Background Backdrops */
+        .photo-strip.p-white { background-color: #ffffff; background-image: none; }
+        .photo-strip.p-slate { background-color: #f1f5f9; background-image: none; }
+        
+        .photo-strip.p-flower {
+            background-color: #fff1f2;
+            background-image: radial-gradient(#fecdd3 2px, transparent 2px), radial-gradient(#fecdd3 2px, #fff1f2 2px);
+            background-size: 32px 32px;
+            background-position: 0 0, 16px 16px;
+        }
 
-        /* Variable Crop Ratios */
-        .ratio-4-3 .strip-slot { aspect-ratio: 4/3; }
-        .ratio-1-1 .strip-slot { aspect-ratio: 1/1; }
-        .ratio-3-4 .strip-slot { aspect-ratio: 3/4; }
+        /* Added Hello Kitty Soft Pastel Bow and Dots Grid Injection */
+        .photo-strip.p-kitty {
+            background-color: #ffe4e6;
+            background-image: radial-gradient(#ff4d6d 1.5px, transparent 1.5px), radial-gradient(#ff4d6d 1.5px, #ffe4e6 1.5px);
+            background-size: 24px 24px;
+            background-position: 0 0, 12px 12px;
+            border: 3px solid #ff4d6d;
+        }
+        
+        .photo-strip.p-emoji {
+            background-color: #fef9c3;
+            background-image: linear-gradient(45deg, #fef08a 25%, transparent 25%, transparent 75%, #fef08a 75%, #fef08a), 
+                              linear-gradient(45deg, #fef08a 25%, #fef9c3 25%, #fef9c3 75%, #fef08a 75%, #fef08a);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+        }
 
+        .photo-strip.p-checker {
+            background-color: #ffffff;
+            background-image: linear-gradient(45deg, #e2e8f0 25%, transparent 25%), linear-gradient(-45deg, #e2e8f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e2e8f0 75%), linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+
+        .photo-strip.p-wave {
+            background: linear-gradient(135deg, #e0e7ff 0%, #fae8ff 50%, #e0f2fe 100%);
+        }
+
+        /* 1x4 Vertical Layout Framework */
+        .photo-strip.layout-1x4 {
+            max-width: 200px;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        .photo-strip.layout-1x4 .strip-footer {
+            grid-column: span 1;
+            margin-top: 8px;
+        }
+
+        /* 2x2 Square Grid Layout Framework */
+        .photo-strip.layout-2x2 {
+            max-width: 340px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .photo-strip.layout-2x2 .strip-footer {
+            grid-column: span 2;
+            margin-top: 10px;
+        }
+
+        /* 4x1 Horizontal Row Layout Framework */
+        .photo-strip.layout-4x1 {
+            max-width: 100%;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .photo-strip.layout-4x1 .strip-footer {
+            grid-column: span 4;
+            margin-top: 12px;
+        }
+
+        /* 1+3 Asymmetric Magazine Framework Layout */
+        .photo-strip.layout-split {
+            max-width: 320px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .photo-strip.layout-split #slot-0 {
+            grid-column: span 3;
+            aspect-ratio: 16/10; 
+        }
+        .photo-strip.layout-split .strip-footer {
+            grid-column: span 3;
+            margin-top: 10px;
+        }
+
+        /* --- Base Strip Slot Styles --- */
         .strip-slot {
-            width: 100%; background: #f1f5f9; border: 2px solid transparent; border-radius: 4px;
-            overflow: hidden; display: flex; justify-content: center; align-items: center;
-            position: relative; cursor: grab; transition: border-color 0.2s; user-select: none;
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: rgba(255, 255, 255, 0.6);
+            border: 2px solid transparent;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+            backdrop-filter: blur(2px);
         }
-        .strip-slot:active { cursor: grabbing; }
-        .strip-slot.selected { border-color: var(--accent-primary); box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2); }
-        .strip-slot img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-        .strip-slot span { font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase; pointer-events: none; }
 
-        /* Watermark Label Layout Inside Slots */
-        .slot-watermark {
-            position: absolute; bottom: 6px; right: 6px; font-size: 8px; font-family: monospace;
-            color: rgba(255, 255, 255, 0.75); background: rgba(0, 0, 0, 0.3);
-            padding: 2px 4px; border-radius: 2px; pointer-events: none; letter-spacing: 0.5px;
+        .strip-slot.selected {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+            background: rgba(255, 255, 255, 0.9);
         }
 
-        .slot-clear-btn {
-            position: absolute; top: 4px; right: 4px; width: 18px; height: 18px; border-radius: 50%;
-            background: rgba(15, 23, 42, 0.75); color: #ffffff; display: none;
-            justify-content: center; align-items: center; font-size: 10px; font-weight: bold; cursor: pointer; z-index: 3; border: none;
+        /* Geometric Shape Uniform Handling via Responsive Clip-Paths */
+        .photo-strip.shape-circle .strip-slot {
+            clip-path: circle(50% at 50% 50%);
+            aspect-ratio: 1/1;
         }
-        .strip-slot:hover .slot-clear-btn { display: flex; }
-        .slot-clear-btn:hover { background: rgba(220, 38, 38, 0.9); }
+        .photo-strip.shape-star .strip-slot {
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            aspect-ratio: 1/1;
+        }
+        .photo-strip.shape-love .strip-slot {
+            clip-path: polygon(50% 15%, 65% 0%, 85% 0%, 100% 20%, 100% 45%, 50% 95%, 0% 45%, 0% 20%, 15% 0%, 35% 0%);
+            aspect-ratio: 1/1;
+        }
 
-        .strip-footer { text-align: center; font-family: var(--strip-font); font-size: 0.8rem; color: var(--strip-text); margin-top: 5px; letter-spacing: 2px; font-weight: bold; text-transform: uppercase; }
-        canvas { display: none; }
+        .strip-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .strip-slot span {
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            pointer-events: none;
+        }
+
+        .strip-footer {
+            text-align: center;
+            font-family: var(--strip-font);
+            font-size: 0.8rem;
+            color: var(--strip-text);
+            letter-spacing: 2px;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 4px 0;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 4px;
+        }
+
+        canvas {
+            display: none;
+        }
     </style>
     <meta property="og:type" content="website">
 <meta property="og:url" content="https://crypnom.github.io/booth/">
@@ -232,10 +507,11 @@
 
     <div class="hero-screen" id="hero-screen">
         <div class="hero-content">
-            <h1 class="hero-title">CTRL + Q Photo Booth Pro</h1>
+            <h1 class="hero-title">CTRL + Q Photo Booth</h1>
             <p class="hero-description">
-                An advanced web-based photo laboratory engine. Edit processing constraints, map crop matrices, 
-                and construct professional canvas sequences with local processing security workflows instantly.
+                An instant browser-based studio designed for clean, minimalist output creation. 
+                Configure filters dynamically, select refined canvas profiles, capture live output assets, or 
+                process local media records through downscaled strip compilation matrix logic instantly.
             </p>
             <button id="enter-booth-btn" style="max-width: 240px; margin-bottom: 40px;">Let's Move To Booth!</button>
         </div>
@@ -261,99 +537,74 @@
 
     <div class="app-content" id="app-content">
         <h1 class="hero-title" style="font-size: 2rem; margin-bottom: 0;">CTRL + Q Photo Booth</h1>
-        <p style="color: var(--text-muted); margin-top: 6px; margin-bottom: 15px; text-align: center;">Drag assets to swap positioning layout context lines.</p>
+        <p style="color: var(--text-muted); margin-top: 6px; margin-bottom: 15px; text-align: center;">Configure studio profile settings below. Tap a slot on the strip to target it explicitly.</p>
 
         <div class="workspace-container">
             <div class="control-side">
-                <div class="camera-box id="camera-box-container">
-                    <video id="video" class="mirror-feed" autoplay playsinline></video>
+                <div class="camera-box">
+                    <video id="video" class="f-normal" autoplay playsinline></video>
                     <div id="countdown">3</div>
-                    <div id="flash"></div>
                 </div>
 
                 <div class="options-panel">
                     <div class="option-group">
-                        <div class="option-label">Fine Tuning Node Matrix</div>
-                        <div class="slider-control">
-                            <label style="font-size:0.75rem; min-width:65px;">Brightness</label>
-                            <input type="range" id="slider-bright" min="50" max="150" value="100">
-                            <span id="val-bright">100%</span>
-                        </div>
-                        <div class="slider-control">
-                            <label style="font-size:0.75rem; min-width:65px;">Contrast</label>
-                            <input type="range" id="slider-contrast" min="50" max="150" value="100">
-                            <span id="val-contrast">100%</span>
-                        </div>
-                        <div class="slider-control">
-                            <label style="font-size:0.75rem; min-width:65px;">Saturation</label>
-                            <input type="range" id="slider-saturate" min="0" max="200" value="100">
-                            <span id="val-saturate">100%</span>
-                        </div>
-                    </div>
-
-                    <div class="option-group">
-                        <div class="option-label">Filter Processing Preset</div>
-                        <div class="pill-select" id="filter-select">
-                            <div class="pill active" data-filter="">Original</div>
-                            <div class="pill" data-filter="sepia(0.4)">Vintage</div>
-                            <div class="pill" data-filter="grayscale(1)">Monochrome</div>
-                            <div class="pill" data-filter="saturate(1.3) sepia(0.1)">Warm Linear</div>
-                            <div class="pill" data-filter="hue-rotate(15deg)">Cool Matrix</div>
-                        </div>
-                    </div>
-
-                    <div class="option-group">
-                        <div class="option-label">Crop Aspect Ratio</div>
-                        <div class="pill-select" id="ratio-select">
-                            <div class="pill active" data-ratio="ratio-4-3" data-w="640" data-h="480">Classic 4:3</div>
-                            <div class="pill" data-ratio="ratio-1-1" data-w="480" data-h="480">Square 1:1</div>
-                            <div class="pill" data-ratio="ratio-3-4" data-w="360" data-h="480">Portrait 3:4</div>
-                        </div>
-                    </div>
-
-                    <div class="option-group">
-                        <div class="option-label">Layout Architecture</div>
+                        <div class="option-label">Studio Canvas Matrix Grid</div>
                         <div class="pill-select" id="layout-select">
-                            <div class="pill active" data-layout="layout-strip">Vertical Strip</div>
-                            <div class="pill" data-layout="layout-grid">Quad Grid (2x2)</div>
+                            <div class="pill active" data-layout="1x4">Vertical Strip (1x4)</div>
+                            <div class="pill" data-layout="2x2">Classic Grid (2x2)</div>
+                            <div class="pill" data-layout="4x1">Cinematic Row (4x1)</div>
+                            <div class="pill" data-layout="split">Asymmetric Focus (1+3)</div>
                         </div>
                     </div>
 
                     <div class="option-group">
-                        <div class="option-label">Strip Color Profile</div>
+                        <div class="option-label">Slot Geometric Shapes</div>
+                        <div class="pill-select" id="shape-select">
+                            <div class="pill active" data-shape="classic">Classic Box</div>
+                            <div class="pill" data-shape="circle">Circle Orbit</div>
+                            <div class="pill" data-shape="star">Star Vector</div>
+                            <div class="pill" data-shape="love">Love Heart</div>
+                        </div>
+                    </div>
+
+                    <div class="option-group">
+                        <div class="option-label">Filter Processing</div>
+                        <div class="pill-select" id="filter-select">
+                            <div class="pill active" data-filter="f-normal">Original</div>
+                            <div class="pill" data-filter="f-vintage">Vintage</div>
+                            <div class="pill" data-filter="f-mono">Monochrome</div>
+                            <div class="pill" data-filter="f-warm">Warm Linear</div>
+                            <div class="pill" data-filter="f-cool">Cool Matrix</div>
+                        </div>
+                    </div>
+
+                    <div class="option-group">
+                        <div class="option-label">Designed Background Backdrops</div>
                         <div class="pill-select" id="theme-select">
-                            <div class="pill active" data-bg="#ffffff">Stark White</div>
-                            <div class="pill" data-bg="#f8fafc">Slate Tint</div>
-                            <div class="pill" data-bg="#fef2f2">Blush Tint</div>
-                            <div class="pill" data-bg="#0f172a">Obsidian Dark</div>
+                            <div class="pill active" data-class="p-white" data-type="white">Stark White</div>
+                            <div class="pill" data-class="p-slate" data-type="slate">Slate Tint</div>
+                            <div class="pill" data-class="p-kitty" data-type="kitty">🎀 Hello Kitty</div>
+                            <div class="pill" data-class="p-flower" data-type="flower">🌸 Flower Vines</div>
+                            <div class="pill" data-class="p-emoji" data-type="emoji">✨ Emoji Spark</div>
+                            <div class="pill" data-class="p-checker" data-type="checker">🏁 Retro Checker</div>
+                            <div class="pill" data-class="p-wave" data-type="wave">🌈 Gradient Wave</div>
                         </div>
                     </div>
 
                     <div class="option-group">
-                        <div class="option-label">Strip Typography Style</div>
+                        <div class="option-label">Strip Text Configuration</div>
                         <div class="pill-select" id="text-select">
-                            <div class="pill active" data-color="#0f172a" data-font="'Georgia', serif">Chronicle (Serif)</div>
-                            <div class="pill" data-color="#475569" data-font="-apple-system, sans-serif">Memories (Sans)</div>
-                            <div class="pill" data-color="#ffffff" data-font="-apple-system, sans-serif">Minimal (Light)</div>
+                            <div class="pill active" data-color="#0f172a" data-font="'Georgia', serif" data-text="CHRONICLE">Chronicle (Serif)</div>
+                            <div class="pill" data-color="#ff4d6d" data-font="sans-serif" data-text="CANDY POP 🎀">Candy Pop (Pink)</div>
+                            <div class="pill" data-color="#475569" data-font="-apple-system, sans-serif" data-text="MEMORIES">Memories (Sans)</div>
+                            <div class="pill" data-color="#1e1b4b" data-font="'Courier New', monospace" data-text="CAPTURE.LOG">Capture (Mono)</div>
+                            <div class="pill" data-color="#ffffff" data-font="-apple-system, sans-serif" data-text="MINIMAL">Minimal (Light)</div>
                         </div>
-                    </div>
-
-                    <div class="option-group">
-                        <div class="option-label">Custom Footer Copy</div>
-                        <input type="text" id="custom-text-input" class="text-field-custom" value="CHRONICLE" placeholder="Type custom strip label...">
-                    </div>
-
-                    <div class="option-group">
-                        <div class="option-label">Corner Watermark Text Overlay</div>
-                        <input type="text" id="watermark-text-input" class="text-field-custom" value="CTRL+Q STUDIO" placeholder="Type corner watermark string...">
                     </div>
                 </div>
 
                 <div class="action-btns">
-                    <div class="dual-btn-row">
-                        <button id="start-btn">Capture Strip</button>
-                        <button id="camera-toggle-btn" class="btn-secondary" style="max-width: 65px; padding: 14px 0;" title="Flip Lens">🔄</button>
-                    </div>
+                    <button id="start-btn">Capture Session Sequence</button>
                     
                     <div class="upload-btn-wrapper">
                         <button class="btn-secondary">Upload Media Asset</button>
@@ -365,19 +616,11 @@
             </div>
 
             <div class="strip-side">
-                <div class="photo-strip layout-strip ratio-4-3" id="photo-strip">
-                    <div class="strip-slot selected" id="slot-0" data-index="0" draggable="true">
-                        <button class="slot-clear-btn">×</button><span style="color:#94a3b8;">Slot 1</span>
-                    </div>
-                    <div class="strip-slot" id="slot-1" data-index="1" draggable="true">
-                        <button class="slot-clear-btn">×</button><span style="color:#94a3b8;">Slot 2</span>
-                    </div>
-                    <div class="strip-slot" id="slot-2" data-index="2" draggable="true">
-                        <button class="slot-clear-btn">×</button><span style="color:#94a3b8;">Slot 3</span>
-                    </div>
-                    <div class="strip-slot" id="slot-3" data-index="3" draggable="true">
-                        <button class="slot-clear-btn">×</button><span style="color:#94a3b8;">Slot 4</span>
-                    </div>
+                <div class="photo-strip layout-1x4 p-white shape-classic" id="photo-strip">
+                    <div class="strip-slot selected" id="slot-0" data-index="0"><span style="color:#94a3b8;">Slot 1</span></div>
+                    <div class="strip-slot" id="slot-1" data-index="1"><span style="color:#94a3b8;">Slot 2</span></div>
+                    <div class="strip-slot" id="slot-2" data-index="2"><span style="color:#94a3b8;">Slot 3</span></div>
+                    <div class="strip-slot" id="slot-3" data-index="3"><span style="color:#94a3b8;">Slot 4</span></div>
                     <div class="strip-footer" id="strip-footer-text">CHRONICLE</div>
                 </div>
             </div>
@@ -390,71 +633,37 @@
         const heroScreen = document.getElementById('hero-screen');
         const enterBoothBtn = document.getElementById('enter-booth-btn');
         const appContent = document.getElementById('app-content');
+
         const video = document.getElementById('video');
         const snapCanvas = document.getElementById('snapshot-canvas');
         const startBtn = document.getElementById('start-btn');
-        const cameraToggleBtn = document.getElementById('camera-toggle-btn');
         const downloadBtn = document.getElementById('download-btn');
         const countdownEl = document.getElementById('countdown');
-        const flashEl = document.getElementById('flash');
         const galleryUpload = document.getElementById('gallery-upload');
         const photoStrip = document.getElementById('photo-strip');
-        const customTextInput = document.getElementById('custom-text-input');
-        const watermarkTextInput = document.getElementById('watermark-text-input');
         const footerText = document.getElementById('strip-footer-text');
         const snapCtx = snapCanvas.getContext('2d');
 
-        // Parameter Node Tracking
-        let bVal = 100, cVal = 100, sVal = 100;
-        let baseFilterStr = '';
-        let targetCropW = 640, targetCropH = 480;
-        let cropRatioClass = 'ratio-4-3';
-        let activeLayout = 'layout-strip';
-        
         let photoCount = 0;
+        const totalPhotos = 4;
         let capturedImages = new Array(4).fill(null); 
+        let activeFilter = 'f-normal';
         let selectedSlotIndex = 0;
-        let isFrontCamera = true;
+        let activeLayout = '1x4';
+        let activeBgType = 'white';
+        let activeShape = 'classic';
 
-        let currentBgColor = '#ffffff';
         let currentTextColor = '#0f172a';
         let currentTextFont = "'Georgia', serif";
         let currentTextContent = 'CHRONICLE';
-        let currentWatermarkContent = 'CTRL+Q STUDIO';
 
-        // Native Audio Synth Shutter Trigger
-        function playShutterAudio() {
-            try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if(!AudioCtx) return;
-                const ctx = new AudioCtx();
-                const bufferSize = ctx.sampleRate * 0.12; 
-                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-                const data = buffer.getChannelData(0);
-                
-                // White noise generation array
-                for (let i = 0; i < bufferSize; i++) {
-                    data[i] = Math.random() * 2 - 1;
-                }
-
-                const noiseNode = ctx.createBufferSource();
-                noiseNode.buffer = buffer;
-
-                const filter = ctx.createBiquadFilter();
-                filter.type = 'highpass';
-                filter.frequency.setValueAtTime(1200, ctx.currentTime);
-                filter.frequency.exponentialRampToValueAtTime(8000, ctx.currentTime + 0.08);
-
-                const gain = ctx.createGain();
-                gain.gain.setValueAtTime(0.7, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.11);
-
-                noiseNode.connect(filter);
-                filter.connect(gain);
-                gain.connect(ctx.destination);
-                noiseNode.start();
-            } catch(e) { console.warn("Audio synthesis restricted:", e); }
-        }
+        const filterCanvasMap = {
+            'f-normal': (ctx) => {},
+            'f-vintage': (ctx) => { ctx.filter = 'sepia(0.4) contrast(1.1) brightness(0.95)'; },
+            'f-mono': (ctx) => { ctx.filter = 'grayscale(1) contrast(1.25)'; },
+            'f-warm': (ctx) => { ctx.filter = 'saturate(1.2) sepia(0.1) brightness(1.02)'; },
+            'f-cool': (ctx) => { ctx.filter = 'saturate(0.95) hue-rotate(15deg) brightness(1.02)'; }
+        };
 
         enterBoothBtn.addEventListener('click', () => {
             heroScreen.style.display = 'none';
@@ -464,69 +673,57 @@
         });
 
         async function initCamera() {
-            if (video.srcObject) { video.srcObject.getTracks().forEach(track => track.stop()); }
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { return; }
-
-            const constraints = {
-                video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: isFrontCamera ? "user" : "environment" },
-                audio: false
-            };
-
-            if (isFrontCamera) video.classList.add('mirror-feed');
-            else video.classList.remove('mirror-feed');
-
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert("Your current profile blocks camera streaming services. Ensure you use HTTPS.");
+                return;
+            }
+            const constraints = { video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: "user" }, audio: false };
             try {
                 const stream = await navigator.mediaDevices.getUserMedia(constraints);
                 video.srcObject = stream;
-            } catch (err) { alert(`Lens configuration issue: ${err.name}`); }
+                video.onloadedmetadata = () => { video.play().catch(e => console.error(e)); };
+            } catch (err) {
+                alert(`Could not target active camera interface stream: ${err.name}`);
+            }
         }
 
-        cameraToggleBtn.addEventListener('click', () => { isFrontCamera = !isFrontCamera; initCamera(); });
-
-        // Build Combined Master Filter String Dynamic Evaluation
-        function updateLiveFilterStyles() {
-            const compiledFilter = `brightness(${bVal}%) contrast(${cVal}%) saturate(${sVal}%) ${baseFilterStr}`;
-            video.style.filter = compiledFilter;
-        }
-
-        // Connect Hardware Processing Controls
-        document.getElementById('slider-bright').addEventListener('input', (e) => { bVal = e.target.value; document.getElementById('val-bright').innerText = bVal+'%'; updateLiveFilterStyles(); });
-        document.getElementById('slider-contrast').addEventListener('input', (e) => { cVal = e.target.value; document.getElementById('val-contrast').innerText = cVal+'%'; updateLiveFilterStyles(); });
-        document.getElementById('slider-saturate').addEventListener('input', (e) => { sVal = e.target.value; document.getElementById('val-saturate').innerText = sVal+'%'; updateLiveFilterStyles(); });
-
-        document.getElementById('filter-select').addEventListener('click', (e) => {
-            if(e.target.classList.contains('pill')) {
-                document.querySelectorAll('#filter-select .pill').forEach(p => p.classList.remove('active'));
-                e.target.classList.add('active');
-                baseFilterStr = e.target.getAttribute('data-filter');
-                updateLiveFilterStyles();
-            }
-        });
-
-        document.getElementById('ratio-select').addEventListener('click', (e) => {
-            if(e.target.classList.contains('pill')) {
-                document.querySelectorAll('#ratio-select .pill').forEach(p => p.classList.remove('active'));
-                e.target.classList.add('active');
-                
-                photoStrip.classList.remove(cropRatioClass);
-                cropRatioClass = e.target.getAttribute('data-ratio');
-                photoStrip.classList.add(cropRatioClass);
-
-                targetCropW = parseInt(e.target.getAttribute('data-w'));
-                targetCropH = parseInt(e.target.getAttribute('data-h'));
-                
-                // Adjust active workspace presentation aspect container safely
-                document.querySelector('.camera-box').style.aspectRatio = `${targetCropW}/${targetCropH}`;
-            }
+        document.querySelectorAll('.strip-slot').forEach(slot => {
+            slot.addEventListener('click', () => {
+                document.querySelectorAll('.strip-slot').forEach(s => s.classList.remove('selected'));
+                slot.classList.add('selected');
+                selectedSlotIndex = parseInt(slot.getAttribute('data-index'));
+            });
         });
 
         document.getElementById('layout-select').addEventListener('click', (e) => {
             if(e.target.classList.contains('pill')) {
                 document.querySelectorAll('#layout-select .pill').forEach(p => p.classList.remove('active'));
                 e.target.classList.add('active');
-                photoStrip.classList.remove(activeLayout);
                 activeLayout = e.target.getAttribute('data-layout');
-                photoStrip.classList.add(activeLayout);
+                syncStripClasses();
+            }
+        });
+
+        document.getElementById('shape-select').addEventListener('click', (e) => {
+            if(e.target.classList.contains('pill')) {
+                document.querySelectorAll('#shape-select .pill').forEach(p => p.classList.remove('active'));
+                e.target.classList.add('active');
+                activeShape = e.target.getAttribute('data-shape');
+                syncStripClasses();
+            }
+        });
+
+        function syncStripClasses() {
+            photoStrip.className = `photo-strip layout-${activeLayout} p-${activeBgType} shape-${activeShape}`;
+        }
+
+        document.getElementById('filter-select').addEventListener('click', (e) => {
+            if(e.target.classList.contains('pill')) {
+                document.querySelectorAll('#filter-select .pill').forEach(p => p.classList.remove('active'));
+                e.target.classList.add('active');
+                video.className = '';
+                activeFilter = e.target.getAttribute('data-filter');
+                video.classList.add(activeFilter);
             }
         });
 
@@ -534,8 +731,8 @@
             if(e.target.classList.contains('pill')) {
                 document.querySelectorAll('#theme-select .pill').forEach(p => p.classList.remove('active'));
                 e.target.classList.add('active');
-                currentBgColor = e.target.getAttribute('data-bg');
-                photoStrip.style.backgroundColor = currentBgColor;
+                activeBgType = e.target.getAttribute('data-type');
+                syncStripClasses();
             }
         });
 
@@ -545,188 +742,318 @@
                 e.target.classList.add('active');
                 currentTextColor = e.target.getAttribute('data-color');
                 currentTextFont = e.target.getAttribute('data-font');
+                currentTextContent = e.target.getAttribute('data-text');
                 footerText.style.color = currentTextColor;
                 footerText.style.fontFamily = currentTextFont;
+                footerText.innerText = currentTextContent;
             }
         });
 
-        customTextInput.addEventListener('input', (e) => { currentTextContent = e.target.value.toUpperCase(); footerText.innerText = currentTextContent || ' '; });
-        watermarkTextInput.addEventListener('input', (e) => { currentWatermarkContent = e.target.value.toUpperCase(); renderSlotsFromData(); });
-
-        // Slot Drag Configuration Management
-        function assignSlotListeners() {
-            document.querySelectorAll('.strip-slot').forEach(slot => {
-                slot.onclick = (e) => {
-                    if (e.target.classList.contains('slot-clear-btn')) return;
-                    document.querySelectorAll('.strip-slot').forEach(s => s.classList.remove('selected'));
-                    slot.classList.add('selected');
-                    selectedSlotIndex = parseInt(slot.getAttribute('data-index'));
-                };
-                slot.ondragstart = (e) => e.dataTransfer.setData('text/plain', slot.getAttribute('data-index'));
-                slot.ondragover = (e) => e.preventDefault();
-                slot.ondrop = (e) => {
-                    e.preventDefault();
-                    const src = parseInt(e.dataTransfer.getData('text/plain'));
-                    const tgt = parseInt(slot.getAttribute('data-index'));
-                    if (src !== tgt) {
-                        const tmp = capturedImages[src]; capturedImages[src] = capturedImages[tgt]; capturedImages[tgt] = tmp;
-                        renderSlotsFromData();
-                    }
-                };
-            });
-            document.querySelectorAll('.slot-clear-btn').forEach(btn => {
-                btn.onclick = (e) => { e.stopPropagation(); capturedImages[parseInt(btn.closest('.strip-slot').getAttribute('data-index'))] = null; renderSlotsFromData(); };
-            });
-        }
-
-        function renderSlotsFromData() {
-            for(let i = 0; i < 4; i++) {
-                const slot = document.getElementById(`slot-${i}`);
-                slot.className = `strip-slot ${selectedSlotIndex === i ? 'selected' : ''}`;
-                if (capturedImages[i]) {
-                    slot.innerHTML = `<button class="slot-clear-btn">×</button><img src="${capturedImages[i]}"><div class="slot-watermark">${currentWatermarkContent}</div>`;
-                } else {
-                    slot.innerHTML = `<button class="slot-clear-btn">×</button><span style="color:#94a3b8;">Slot ${i+1}</span>`;
-                }
-            }
-            assignSlotListeners();
-            updateDownloadButtonVisibility();
-        }
-
         startBtn.addEventListener('click', () => {
-            photoCount = 0; capturedImages = new Array(4).fill(null); startBtn.disabled = true; downloadBtn.style.display = 'none';
-            for(let i=0; i<4; i++) document.getElementById(`slot-${i}`).innerHTML = `<span style="color:#94a3b8;">Processing...</span>`;
+            photoCount = 0;
+            capturedImages = new Array(4).fill(null);
+            startBtn.disabled = true;
+            downloadBtn.style.display = 'none';
+            for(let i=0; i<4; i++) {
+                document.getElementById(`slot-${i}`).innerHTML = `<span style="color:#94a3b8;">Processing...</span>`;
+            }
             takeNextPhotoStrip();
         });
 
         function takeNextPhotoStrip() {
             if (photoCount < totalPhotos) {
-                let timeLeft = 3; countdownEl.style.display = 'flex'; countdownEl.innerText = timeLeft;
+                let timeLeft = 3;
+                countdownEl.style.display = 'flex';
+                countdownEl.innerText = timeLeft;
                 const timer = setInterval(() => {
                     timeLeft--;
-                    if (timeLeft > 0) countdownEl.innerText = timeLeft;
-                    else {
-                        clearInterval(timer); countdownEl.style.display = 'none';
-                        playShutterAudio();
-                        flashEl.classList.remove('flash-active'); void flashEl.offsetWidth; flashEl.classList.add('flash-active');
-                        capturePhoto(photoCount); photoCount++; setTimeout(takeNextPhotoStrip, 800);
+                    if (timeLeft > 0) {
+                        countdownEl.innerText = timeLeft;
+                    } else {
+                        clearInterval(timer);
+                        countdownEl.style.display = 'none';
+                        capturePhoto(photoCount);
+                        photoCount++;
+                        setTimeout(takeNextPhotoStrip, 800);
                     }
                 }, 1000);
-            } else { startBtn.disabled = false; updateDownloadButtonVisibility(); }
+            } else {
+                startBtn.disabled = false;
+                updateDownloadButtonVisibility();
+            }
         }
 
         function capturePhoto(targetSlot) {
-            snapCanvas.width = targetCropW; snapCanvas.height = targetCropH;
-            snapCtx.clearRect(0, 0, targetCropW, targetCropH);
+            snapCtx.clearRect(0, 0, snapCanvas.width, snapCanvas.height);
             snapCtx.save();
-            
-            if (isFrontCamera) { snapCtx.translate(targetCropW, 0); snapCtx.scale(-1, 1); }
-            snapCtx.filter = `brightness(${bVal}%) contrast(${cVal}%) saturate(${sVal}%) ${baseFilterStr}`;
-            
-            // Mathematical center-crop positioning logic evaluation
-            const videoAspect = 640 / 480;
-            const targetAspect = targetCropW / targetCropH;
-            let sx = 0, sy = 0, sw = 640, sh = 480;
-
-            if (videoAspect > targetAspect) { sw = sh * targetAspect; sx = (640 - sw) / 2; } 
-            else if (videoAspect < targetAspect) { sh = sw / targetAspect; sy = (480 - sh) / 2; }
-
-            snapCtx.drawImage(video, sx, sy, sw, sh, 0, 0, targetCropW, targetCropH);
-            
-            // Draw internal asset level custom text overlay watermark sequence
-            if(currentWatermarkContent) {
-                snapCtx.restore(); snapCtx.save();
-                snapCtx.fillStyle = "rgba(255,255,255,0.75)";
-                snapCtx.font = "bold 13px monospace";
-                snapCtx.textAlign = "right";
-                snapCtx.fillText(currentWatermarkContent, targetCropW - 15, targetCropH - 15);
-            }
-            
+            snapCtx.translate(snapCanvas.width, 0);
+            snapCtx.scale(-1, 1);
+            if (filterCanvasMap[activeFilter]) filterCanvasMap[activeFilter](snapCtx);
+            snapCtx.drawImage(video, 0, 0, snapCanvas.width, snapCanvas.height);
             snapCtx.restore();
-            capturedImages[targetSlot] = snapCanvas.toDataURL('image/jpeg', 0.9);
-            renderSlotsFromData();
+            snapCtx.filter = 'none';
+
+            const dataUrl = snapCanvas.toDataURL('image/jpeg');
+            capturedImages[targetSlot] = dataUrl;
+            const img = document.createElement('img');
+            img.src = dataUrl;
+            const slot = document.getElementById(`slot-${targetSlot}`);
+            slot.innerHTML = '';
+            slot.appendChild(img);
+            updateDownloadButtonVisibility();
         }
 
         galleryUpload.addEventListener('change', (e) => {
-            const file = e.target.files[0]; if (!file) return;
+            const file = e.target.files[0];
+            if (!file) return;
             const targetIndex = selectedSlotIndex;
             const reader = new FileReader();
             reader.onload = (event) => {
-                const imgObj = new Image(); imgObj.src = event.target.result;
+                const imgObj = new Image();
+                imgObj.src = event.target.result;
                 imgObj.onload = () => {
-                    snapCanvas.width = targetCropW; snapCanvas.height = targetCropH;
-                    snapCtx.clearRect(0, 0, targetCropW, targetCropH);
-                    snapCtx.save();
-                    snapCtx.filter = `brightness(${bVal}%) contrast(${cVal}%) saturate(${sVal}%) ${baseFilterStr}`;
-                    
-                    const scale = Math.max(targetCropW / imgObj.width, targetCropH / imgObj.height);
-                    const x = (targetCropW / 2) - (imgObj.width / 2) * scale;
-                    const y = (targetCropH / 2) - (imgObj.height / 2) * scale;
+                    snapCtx.clearRect(0, 0, snapCanvas.width, snapCanvas.height);
+                    if (filterCanvasMap[activeFilter]) filterCanvasMap[activeFilter](snapCtx);
+                    const scale = Math.max(snapCanvas.width / imgObj.width, snapCanvas.height / imgObj.height);
+                    const x = (snapCanvas.width / 2) - (imgObj.width / 2) * scale;
+                    const y = (snapCanvas.height / 2) - (imgObj.height / 2) * scale;
                     snapCtx.drawImage(imgObj, x, y, imgObj.width * scale, imgObj.height * scale);
-                    
-                    if(currentWatermarkContent) {
-                        snapCtx.restore(); snapCtx.save();
-                        snapCtx.fillStyle = "rgba(255,255,255,0.75)"; snapCtx.font = "bold 13px monospace"; snapCtx.textAlign = "right";
-                        snapCtx.fillText(currentWatermarkContent, targetCropW - 15, targetCropH - 15);
+                    snapCtx.filter = 'none';
+
+                    const normalizedUrl = snapCanvas.toDataURL('image/jpeg');
+                    capturedImages[targetIndex] = normalizedUrl;
+                    const displayImg = document.createElement('img');
+                    displayImg.src = normalizedUrl;
+                    const slot = document.getElementById(`slot-${targetIndex}`);
+                    slot.innerHTML = '';
+                    slot.appendChild(displayImg);
+
+                    if (targetIndex < 3) {
+                        const nextSlot = document.getElementById(`slot-${targetIndex + 1}`);
+                        document.querySelectorAll('.strip-slot').forEach(s => s.classList.remove('selected'));
+                        nextSlot.classList.add('selected');
+                        selectedSlotIndex = targetIndex + 1;
                     }
-                    snapCtx.restore();
-                    capturedImages[targetIndex] = snapCanvas.toDataURL('image/jpeg', 0.9);
-                    if (targetIndex < 3) selectedSlotIndex = targetIndex + 1;
-                    renderSlotsFromData();
+                    updateDownloadButtonVisibility();
                 };
             };
-            reader.readAsDataURL(file); e.target.value = '';
+            reader.readAsDataURL(file);
+            e.target.value = '';
         });
 
-        function updateDownloadButtonVisibility() { downloadBtn.style.display = capturedImages.some(img => img !== null) ? 'block' : 'none'; }
+        function updateDownloadButtonVisibility() {
+            downloadBtn.style.display = capturedImages.some(img => img !== null) ? 'block' : 'none';
+        }
+
+        function drawCanvasPattern(ctx, type, width, height) {
+            if (type === 'white') {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, width, height);
+            } else if (type === 'slate') {
+                ctx.fillStyle = '#f1f5f9';
+                ctx.fillRect(0, 0, width, height);
+            } else if (type === 'kitty') {
+                // Complies precise matching pastel pink framework grid matrix for download export
+                ctx.fillStyle = '#ffe4e6';
+                ctx.fillRect(0, 0, width, height);
+                ctx.fillStyle = '#ff4d6d';
+                const size = 24;
+                for (let x = 0; x < width + size; x += size) {
+                    for (let y = 0; y < height + size; y += size) {
+                        ctx.beginPath(); ctx.arc(x, y, 1.5, 0, Math.PI * 2); ctx.fill();
+                        ctx.beginPath(); ctx.arc(x + size/2, y + size/2, 1.5, 0, Math.PI * 2); ctx.fill();
+                    }
+                }
+                // Draw a structural border around canvas
+                ctx.lineWidth = 6;
+                ctx.strokeStyle = '#ff4d6d';
+                ctx.strokeRect(0, 0, width, height);
+            } else if (type === 'flower') {
+                ctx.fillStyle = '#fff1f2';
+                ctx.fillRect(0, 0, width, height);
+                ctx.fillStyle = '#fecdd3';
+                const size = 32;
+                for (let x = 0; x < width + size; x += size) {
+                    for (let y = 0; y < height + size; y += size) {
+                        ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill();
+                        ctx.beginPath(); ctx.arc(x + size/2, y + size/2, 3, 0, Math.PI * 2); ctx.fill();
+                    }
+                }
+            } else if (type === 'emoji') {
+                ctx.fillStyle = '#fef9c3';
+                ctx.fillRect(0, 0, width, height);
+                ctx.fillStyle = '#fef08a';
+                const size = 40;
+                for (let x = 0; x < width + size; x += size) {
+                    for (let y = 0; y < height + size; y += size) {
+                        ctx.fillRect(x, y, size/2, size/2);
+                        ctx.fillRect(x + size/2, y + size/2, size/2, size/2);
+                    }
+                }
+            } else if (type === 'checker') {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, width, height);
+                ctx.fillStyle = '#e2e8f0';
+                const size = 20;
+                for (let x = 0; x < width; x += size * 2) {
+                    for (let y = 0; y < height; y += size * 2) {
+                        ctx.fillRect(x, y, size, size);
+                        ctx.fillRect(x + size, y + size, size, size);
+                    }
+                }
+            } else if (type === 'wave') {
+                const grad = ctx.createLinearGradient(0, 0, width, height);
+                grad.addColorStop(0, '#e0e7ff');
+                grad.addColorStop(0.5, '#fae8ff');
+                grad.addColorStop(1, '#e0f2fe');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, width, height);
+            }
+        }
+
+        function clipSlotShape(ctx, type, x, y, w, h) {
+            ctx.beginPath();
+            if (type === 'classic') {
+                ctx.rect(x, y, w, h);
+            } else if (type === 'circle') {
+                const cx = x + w / 2;
+                const cy = y + h / 2;
+                const radius = Math.min(w, h) / 2;
+                ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            } else if (type === 'star') {
+                const cx = x + w / 2;
+                const cy = y + h / 2;
+                const spikes = 5;
+                const outerRadius = Math.min(w, h) / 2;
+                const innerRadius = outerRadius * 0.45;
+                let rot = (Math.PI / 2) * 3;
+                let sx = cx, sy = cy;
+                const step = Math.PI / spikes;
+
+                ctx.moveTo(cx, cy - outerRadius);
+                for (let i = 0; i < spikes; i++) {
+                    sx = cx + Math.cos(rot) * outerRadius;
+                    sy = cy + Math.sin(rot) * outerRadius;
+                    ctx.lineTo(sx, sy);
+                    rot += step;
+
+                    sx = cx + Math.cos(rot) * innerRadius;
+                    sy = cy + Math.sin(rot) * innerRadius;
+                    ctx.lineTo(sx, sy);
+                    rot += step;
+                }
+                ctx.closePath();
+            } else if (type === 'love') {
+                const d = Math.min(w, h);
+                const kx = x + (w - d) / 2;
+                const ky = y + (h - d) / 2;
+                
+                ctx.moveTo(kx + d / 2, ky + d * 0.85);
+                ctx.bezierCurveTo(kx + d * 0.1, ky + d * 0.6, kx, ky + d * 0.2, kx + d * 0.25, ky + d * 0.15);
+                ctx.bezierCurveTo(kx + d * 0.4, ky + d * 0.15, kx + d * 0.45, ky + d * 0.35, kx + d / 2, ky + d * 0.4);
+                ctx.bezierCurveTo(kx + d * 0.55, ky + d * 0.35, kx + d * 0.6, ky + d * 0.15, kx + d * 0.75, ky + d * 0.15);
+                ctx.bezierCurveTo(kx + d * 1.0, ky + d * 0.2, kx + d * 0.9, ky + d * 0.6, kx + d / 2, ky + d * 0.85);
+                ctx.closePath();
+            }
+            ctx.clip();
+        }
 
         downloadBtn.addEventListener('click', () => {
-            const stripCanvas = document.createElement('canvas'); const stripCtx = stripCanvas.getContext('2d');
-            const imgW = targetCropW; const imgH = targetCropH;
-            const padding = 40; const gap = 25; const footerH = 90;
+            const stripCanvas = document.createElement('canvas');
+            const stripCtx = stripCanvas.getContext('2d');
 
-            if (activeLayout === 'layout-strip') {
-                stripCanvas.width = imgW + (padding * 2); stripCanvas.height = (imgH * 4) + (gap * 3) + (padding * 2) + footerH;
-            } else {
-                stripCanvas.width = (imgW * 2) + gap + (padding * 2); stripCanvas.height = (imgH * 2) + gap + (padding * 2) + footerH;
+            const isSquareShape = (activeShape !== 'classic');
+            const imgW = 400;
+            const imgH = isSquareShape ? 400 : 300; 
+            
+            const padding = 30;
+            const gap = 24;
+            const footerH = 80;
+
+            if (activeLayout === '1x4') {
+                stripCanvas.width = imgW + (padding * 2);
+                stripCanvas.height = (imgH * 4) + (gap * 3) + (padding * 2) + footerH;
+            } else if (activeLayout === '2x2') {
+                stripCanvas.width = (imgW * 2) + gap + (padding * 2);
+                stripCanvas.height = (imgH * 2) + gap + (padding * 2) + footerH;
+            } else if (activeLayout === '4x1') {
+                stripCanvas.width = (imgW * 4) + (gap * 3) + (padding * 2);
+                stripCanvas.height = imgH + (padding * 2) + footerH;
+            } else if (activeLayout === 'split') {
+                stripCanvas.width = (imgW * 3) + (gap * 2) + (padding * 2);
+                const slot0Width = stripCanvas.width - (padding * 2);
+                const slot0Height = isSquareShape ? slot0Width * (1/1) : slot0Width * (10/16);
+                stripCanvas.height = slot0Height + gap + imgH + (padding * 2) + footerH;
             }
 
-            stripCtx.fillStyle = currentBgColor; stripCtx.fillRect(0, 0, stripCanvas.width, stripCanvas.height);
-            let placementMap = [];
+            drawCanvasPattern(stripCtx, activeBgType, stripCanvas.width, stripCanvas.height);
 
-            if (activeLayout === 'layout-strip') {
-                let currentSlotY = padding;
-                for (let i = 0; i < 4; i++) {
-                    if (capturedImages[i]) placementMap.push({ src: capturedImages[i], x: padding, y: currentSlotY });
-                    currentSlotY += (imgH + gap);
-                }
-            } else {
-                const matrixCoords = [
-                    { x: padding, y: padding }, { x: padding + imgW + gap, y: padding },
-                    { x: padding, y: padding + imgH + gap }, { x: padding + imgW + gap, y: padding + imgH + gap }
-                ];
-                let coordsIdx = 0;
-                for (let i = 0; i < 4; i++) {
-                    if (capturedImages[i]) { placementMap.push({ src: capturedImages[i], x: matrixCoords[coordsIdx].x, y: matrixCoords[coordsIdx].y }); coordsIdx++; }
-                }
+            let imagesLoaded = 0;
+            const imagesToLoad = capturedImages.filter(img => img !== null).length;
+            if(imagesToLoad === 0) return;
+
+            for(let i = 0; i < 4; i++) {
+                if(!capturedImages[i]) continue;
+                const img = new Image();
+                img.src = capturedImages[i];
+                img.onload = ((currentIndex) => {
+                    return () => {
+                        stripCtx.save(); 
+
+                        let x = padding;
+                        let y = padding;
+                        let currentDrawW = imgW;
+                        let currentDrawH = imgH;
+
+                        if (activeLayout === '1x4') {
+                            x = padding;
+                            y = padding + (currentIndex * (imgH + gap));
+                        } else if (activeLayout === '2x2') {
+                            x = padding + ((currentIndex % 2) * (imgW + gap));
+                            y = padding + (Math.floor(currentIndex / 2) * (imgH + gap));
+                        } else if (activeLayout === '4x1') {
+                            x = padding + (currentIndex * (imgW + gap));
+                            y = padding;
+                        } else if (activeLayout === 'split') {
+                            if(currentIndex === 0) {
+                                currentDrawW = stripCanvas.width - (padding * 2);
+                                currentDrawH = isSquareShape ? currentDrawW : currentDrawW * (10/16);
+                                x = padding;
+                                y = padding;
+                            } else {
+                                const subIndex = currentIndex - 1;
+                                const heroW = stripCanvas.width - (padding * 2);
+                                const heroH = isSquareShape ? heroW : heroW * (10/16);
+                                currentDrawW = (heroW - (gap * 2)) / 3;
+                                currentDrawH = currentDrawW; 
+                                x = padding + (subIndex * (currentDrawW + gap));
+                                y = padding + heroH + gap;
+                            }
+                        }
+
+                        clipSlotShape(stripCtx, activeShape, x, y, currentDrawW, currentDrawH);
+                        stripCtx.drawImage(img, x, y, currentDrawW, currentDrawH);
+                        stripCtx.restore(); 
+                        imagesLoaded++;
+
+                        if (imagesLoaded === imagesToLoad) {
+                            stripCtx.fillStyle = "rgba(255, 255, 255, 0.4)";
+                            stripCtx.fillRect(padding, stripCanvas.height - footerH + 15, stripCanvas.width - (padding * 2), 50);
+
+                            stripCtx.fillStyle = currentTextColor;
+                            stripCtx.font = `bold 24px ${currentTextFont}`;
+                            stripCtx.textBaseline = "middle";
+                            stripCtx.textAlign = "center";
+                            stripCtx.fillText(currentTextContent, stripCanvas.width / 2, stripCanvas.height - 40);
+
+                            const link = document.createElement('a');
+                            link.download = 'ctrl_q_booth_shaped_strip.jpg';
+                            link.href = stripCanvas.toDataURL('image/jpeg', 0.95);
+                            link.click();
+                        }
+                    };
+                })(i);
             }
-
-            let loaded = 0;
-            if(placementMap.length === 0) return;
-            placementMap.forEach((item) => {
-                const img = new Image(); img.src = item.src;
-                img.onload = () => {
-                    stripCtx.drawImage(img, item.x, item.y, imgW, imgH); loaded++;
-                    if (loaded === placementMap.length) {
-                        stripCtx.fillStyle = currentTextColor; stripCtx.font = `bold 26px ${currentTextFont}`;
-                        stripCtx.textBaseline = "middle"; stripCtx.textAlign = "center";
-                        stripCtx.fillText(currentTextContent, stripCanvas.width / 2, stripCanvas.height - 50);
-
-                        const link = document.createElement('a'); link.download = 'ctrl_q_studio.jpg';
-                        link.href = stripCanvas.toDataURL('image/jpeg', 0.95); link.click();
-                    }
-                };
-            });
         });
     </script>
 </body>
